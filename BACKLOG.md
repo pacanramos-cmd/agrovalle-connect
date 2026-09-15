@@ -19,6 +19,10 @@
 | HU-03 | Como Usuario, quiero ver los precios promedio del Valle para negociar mejor. | Consulta del promedio de transacciones recientes y resultado exacto en COP. | S | 8 |
 | HU-04 | Como Comprador, quiero filtrar las cosechas por municipio y categoría, para encontrar productos locales de mi interés rápidamente. | GET con municipio y categoría, respuesta 200 y ofertas activas en JSON. | M | 3 |
 | HU-05 | Como Comprador, quiero enviar una solicitud de contacto directo al agricultor, para acordar condiciones de compra y logística. | POST autenticado con JWT, persistencia de la interacción y confirmación de notificación. | M | 5 |
+| HU-06 | Como Agricultor, quiero registrar una finca con su información básica y ubicación, para asociar mis productos a un lugar de producción y facilitar su trazabilidad. | Registro autenticado de finca, validación de datos, persistencia e ID único. | S | 3 |
+| HU-07 | Como Agricultor, quiero consultar el inventario disponible de mis productos, para conocer las cantidades disponibles antes de aceptar o gestionar pedidos. | Consulta autenticada del inventario y cantidades disponibles. | M | 3 |
+| HU-08 | Como Comprador, quiero crear una orden de compra seleccionando productos disponibles, para solicitar formalmente los productos que deseo adquirir. | Creación autenticada de orden, validación de disponibilidad, persistencia e ID único. | M | 8 |
+| HU-09 | Como Agricultor, quiero confirmar el alistamiento de una orden de compra, para informar que los productos están preparados para continuar con el proceso logístico. | Actualización autenticada del estado de alistamiento y persistencia. | M | 5 |
 
 > **Nota de estimación:** los Story Points anteriores son una estimación inicial para organizar el backlog. El equipo debe validarlos mediante Planning Poker, utilizando la escala Fibonacci **1, 2, 3, 5, 8, 13**, antes de cerrar la versión definitiva.
 
@@ -245,32 +249,255 @@ And responde con HTTP 401 Unauthorized
 
 ---
 
-# 2. Auditoría INVEST — primera etapa
+## HU-06 — Registro de finca
+
+**Como** agricultor,
+
+**quiero** registrar una finca con su información básica y ubicación,
+
+**para** asociar mis productos a un lugar de producción y facilitar su trazabilidad.
+
+**Prioridad:** Should Have
+
+**Story Points:** 3
+
+### Escenario 1 — Registro exitoso
+
+```gherkin
+Given un agricultor autenticado mediante JWT
+And dispone de una cuenta registrada en AgroValle Connect
+When registra una finca proporcionando nombre, municipio y ubicación
+Then el sistema valida la información recibida
+And persiste la finca en PostgreSQL
+And genera un identificador único para la finca
+And responde con HTTP 201 Created
+
+### Escenario 2 — Datos obligatorios inválidos
+
+```gherkin
+Given un agricultor autenticado mediante JWT
+When intenta registrar una finca sin completar los datos obligatorios
+Then el sistema rechaza la solicitud
+And responde con HTTP 400 Bad Request
+And no crea el registro de la finca
+
+Contrato REST inicial
+Método: POST
+Endpoint: /api/v1/fincas
+Autenticación: JWT
+Resultado exitoso: 201 Created
+Persistencia: PostgreSQL
+
+---
+
+## HU-07 — Consulta de inventario
+
+Como agricultor,
+
+quiero consultar el inventario disponible de mis productos,
+
+para conocer las cantidades disponibles antes de aceptar o gestionar pedidos.
+
+Prioridad: Must Have
+
+Story Points: 3
+
+### Escenario 1 — Consulta exitosa
+
+```gherkin
+Given un agricultor autenticado mediante JWT
+And existen productos publicados asociados a su cuenta
+When consulta su inventario
+Then el sistema responde con HTTP 200 OK
+And retorna un arreglo JSON con los productos y sus cantidades disponibles
+
+### Escenario 2 — Inventario sin productos disponibles
+
+```gherkin
+Given un agricultor autenticado mediante JWT
+And no existen productos disponibles en su inventario
+When consulta su inventario
+Then el sistema responde con HTTP 200 OK
+And retorna un arreglo JSON vacío
+
+Contrato REST inicial
+Método: GET
+Endpoint: /api/v1/inventario
+Autenticación: JWT
+Resultado exitoso: 200 OK
+Fuente de datos: PostgreSQL
+
+---
+
+## HU-08 — Creación de orden de compra
+
+Como comprador,
+
+quiero crear una orden de compra seleccionando productos disponibles,
+
+para solicitar formalmente los productos que deseo adquirir.
+
+Prioridad: Must Have
+
+Story Points: 8
+
+### Escenario 1 — Creación exitosa
+
+```gherkin
+Given un comprador autenticado mediante JWT
+And existe una oferta activa con cantidad disponible
+When envía una solicitud para crear una orden indicando el producto y la cantidad solicitada
+Then el sistema valida la disponibilidad del producto
+And registra la orden de compra en PostgreSQL
+And genera un identificador único para la orden
+And responde con HTTP 201 Created
+
+### Escenario 2 — Cantidad superior al stock disponible
+
+```gherkin
+Given un comprador autenticado mediante JWT
+And existe una oferta activa con una cantidad disponible determinada
+When solicita una cantidad superior al stock disponible
+Then el sistema rechaza la solicitud
+And responde con HTTP 400 Bad Request
+And no crea la orden de compra
+
+### Escenario 3 — Usuario no autenticado
+
+```gherkin
+Given un usuario sin un JWT válido
+When intenta crear una orden de compra
+Then el sistema rechaza la solicitud
+And responde con HTTP 401 Unauthorized
+
+Contrato REST inicial
+Método: POST
+Endpoint: /api/v1/pedidos
+Autenticación: JWT
+Resultado exitoso: 201 Created
+Persistencia: PostgreSQL
+
+---
+
+## HU-09 — Confirmación de alistamiento
+
+Como agricultor,
+
+quiero confirmar el alistamiento de una orden de compra,
+
+para informar que los productos están preparados para continuar con el proceso logístico.
+
+Prioridad: Must Have
+
+Story Points: 5
+
+### Escenario 1 — Confirmación exitosa
+
+```gherkin
+Given un agricultor autenticado mediante JWT
+And existe una orden de compra asociada a uno de sus productos
+And la orden se encuentra pendiente de alistamiento
+When confirma que la orden está lista
+Then el sistema actualiza el estado de la orden
+And registra la actualización en PostgreSQL
+And responde con HTTP 200 OK
+
+### Escenario 2 — Orden inexistente o no asociada
+
+```gherkin
+Given un agricultor autenticado mediante JWT
+When intenta confirmar una orden inexistente o que no pertenece a sus productos
+Then el sistema rechaza la solicitud
+And responde con HTTP 404 Not Found
+And no modifica ninguna orden
+
+### Escenario 3 — Usuario no autenticado
+
+```gherkin
+Given un usuario sin un JWT válido
+When intenta confirmar el alistamiento de una orden
+Then el sistema rechaza la solicitud
+And responde con HTTP 401 Unauthorized
+
+Contrato REST inicial
+Método: PATCH
+Endpoint: /api/v1/pedidos/{id_pedido}/alistamiento
+Autenticación: JWT
+Resultado exitoso: 200 OK
+Persistencia: PostgreSQL
+
+---
+# 2. Auditoría INVEST
+
+### Auditoría actual — HU-01 a HU-09
 
 | HU | Independent | Negotiable | Valuable | Estimable | Small | Testable |
-|---|:---:|:---:|:---:|:---:|:---:|:---:|
+|---|---|---|---|---|---|---|
 | HU-01 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
 | HU-02 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
 | HU-03 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
 | HU-04 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
 | HU-05 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| HU-06 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| HU-07 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| HU-08 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| HU-09 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
 
-### Justificación INVEST
+### Justificación INVEST — HU-01 a HU-05
 
-- **Independent:** cada historia representa una capacidad funcional identificable y puede validarse de manera separada.
-- **Negotiable:** los criterios definen el resultado esperado, pero no obligan una implementación interna específica.
-- **Valuable:** cada historia aporta valor a agricultores, compradores o usuarios.
-- **Estimable:** cada historia tiene Story Points iniciales y puede ser discutida por el equipo mediante Planning Poker.
-- **Small:** cada historia está delimitada a una capacidad funcional concreta.
-- **Testable:** cada historia contiene escenarios Given-When-Then con resultados verificables mediante API, códigos HTTP y/o persistencia.
+Las HU-01 a HU-05 cuentan con criterios de aceptación BDD y contratos REST definidos en el backlog. Su revisión INVEST se mantiene de acuerdo con el alcance funcional establecido para cada historia.
 
----
+### Justificación INVEST — HU-06 a HU-09
+
+#### HU-06 — Registro de finca
+
+- **Independent:** puede desarrollarse como una funcionalidad independiente del registro de productos.
+- **Negotiable:** los datos específicos de la finca pueden ajustarse durante el desarrollo.
+- **Valuable:** permite asociar la producción a un lugar y contribuye a la trazabilidad.
+- **Estimable:** el alcance está delimitado al registro y persistencia de una finca.
+- **Small:** se concentra en una operación principal de registro.
+- **Testable:** cuenta con escenarios BDD y respuestas HTTP verificables.
+
+#### HU-07 — Consulta de inventario
+
+- **Independent:** puede implementarse como una consulta independiente sobre los productos del agricultor.
+- **Negotiable:** la representación del inventario puede evolucionar durante el desarrollo.
+- **Valuable:** permite al agricultor conocer las cantidades disponibles.
+- **Estimable:** el alcance inicial se limita a consultar productos y cantidades.
+- **Small:** corresponde principalmente a una operación de consulta.
+- **Testable:** puede validarse mediante escenarios BDD y respuesta HTTP 200.
+
+#### HU-08 — Creación de orden de compra
+
+- **Independent:** representa una operación funcional diferenciada dentro del módulo de pedidos.
+- **Negotiable:** los detalles de la orden pueden refinarse sin modificar el objetivo principal.
+- **Valuable:** permite formalizar la intención de adquisición de un comprador.
+- **Estimable:** el alcance está delimitado a validar disponibilidad y crear la orden.
+- **Small:** se concentra en una operación principal de creación.
+- **Testable:** contempla escenarios de éxito, stock insuficiente y autenticación inválida.
+
+#### HU-09 — Confirmación de alistamiento
+
+- **Independent:** puede implementarse como una operación específica sobre una orden existente.
+- **Negotiable:** los detalles del proceso de alistamiento pueden evolucionar.
+- **Valuable:** permite informar que el pedido está preparado para continuar con la logística.
+- **Estimable:** la funcionalidad está limitada a validar y actualizar el estado.
+- **Small:** corresponde a una operación puntual sobre el estado de una orden.
+- **Testable:** contempla escenarios exitosos, orden inexistente/no perteneciente y autenticación inválida.
+
+### Auditoría pendiente — HU-10 a HU-15
+
+Las historias HU-10 a HU-15 serán incorporadas por los demás integrantes del equipo.
+
+Una vez agregadas, deberán ser revisadas bajo los seis criterios INVEST y cumplir con los mismos criterios de calidad definidos para HU-01 a HU-09.
+
+La auditoría definitiva del Sprint 0 deberá contener las 15 historias de usuario.
 
 # 3. Estado de esta etapa
 
-Esta versión contiene únicamente **HU-01 a HU-05**, para ser utilizada como primera entrega funcional del backlog dentro del trabajo colaborativo.
+Esta versión contiene las historias **HU-01 a HU-09**, correspondientes a la primera etapa de trabajo colaborativo del backlog.
 
-Las **HU-06 a HU-15** se incorporarán posteriormente por los demás integrantes, conservando el mismo estándar:
+Las **HU-10 a HU-15** serán incorporadas posteriormente por los demás integrantes, conservando el mismo estándar:
 
 1. Historia de usuario.
 2. Prioridad MoSCoW.
