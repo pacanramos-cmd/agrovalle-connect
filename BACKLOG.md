@@ -427,33 +427,77 @@ Resultado exitoso: 200 OK
 Persistencia: PostgreSQL
 
 ---
+# 2. Auditoría INVEST
 
-# 2. Auditoría INVEST — primera etapa
+### Auditoría actual — HU-01 a HU-09
 
 | HU | Independent | Negotiable | Valuable | Estimable | Small | Testable |
-|---|:---:|:---:|:---:|:---:|:---:|:---:|
+|---|---|---|---|---|---|---|
 | HU-01 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
 | HU-02 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
 | HU-03 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
 | HU-04 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
 | HU-05 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| HU-06 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| HU-07 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| HU-08 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| HU-09 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
 
-### Justificación INVEST
+### Justificación INVEST — HU-01 a HU-05
 
-- **Independent:** cada historia representa una capacidad funcional identificable y puede validarse de manera separada.
-- **Negotiable:** los criterios definen el resultado esperado, pero no obligan una implementación interna específica.
-- **Valuable:** cada historia aporta valor a agricultores, compradores o usuarios.
-- **Estimable:** cada historia tiene Story Points iniciales y puede ser discutida por el equipo mediante Planning Poker.
-- **Small:** cada historia está delimitada a una capacidad funcional concreta.
-- **Testable:** cada historia contiene escenarios Given-When-Then con resultados verificables mediante API, códigos HTTP y/o persistencia.
+Las HU-01 a HU-05 cuentan con criterios de aceptación BDD y contratos REST definidos en el backlog. Su revisión INVEST se mantiene de acuerdo con el alcance funcional establecido para cada historia.
 
----
+### Justificación INVEST — HU-06 a HU-09
+
+#### HU-06 — Registro de finca
+
+- **Independent:** puede desarrollarse como una funcionalidad independiente del registro de productos.
+- **Negotiable:** los datos específicos de la finca pueden ajustarse durante el desarrollo.
+- **Valuable:** permite asociar la producción a un lugar y contribuye a la trazabilidad.
+- **Estimable:** el alcance está delimitado al registro y persistencia de una finca.
+- **Small:** se concentra en una operación principal de registro.
+- **Testable:** cuenta con escenarios BDD y respuestas HTTP verificables.
+
+#### HU-07 — Consulta de inventario
+
+- **Independent:** puede implementarse como una consulta independiente sobre los productos del agricultor.
+- **Negotiable:** la representación del inventario puede evolucionar durante el desarrollo.
+- **Valuable:** permite al agricultor conocer las cantidades disponibles.
+- **Estimable:** el alcance inicial se limita a consultar productos y cantidades.
+- **Small:** corresponde principalmente a una operación de consulta.
+- **Testable:** puede validarse mediante escenarios BDD y respuesta HTTP 200.
+
+#### HU-08 — Creación de orden de compra
+
+- **Independent:** representa una operación funcional diferenciada dentro del módulo de pedidos.
+- **Negotiable:** los detalles de la orden pueden refinarse sin modificar el objetivo principal.
+- **Valuable:** permite formalizar la intención de adquisición de un comprador.
+- **Estimable:** el alcance está delimitado a validar disponibilidad y crear la orden.
+- **Small:** se concentra en una operación principal de creación.
+- **Testable:** contempla escenarios de éxito, stock insuficiente y autenticación inválida.
+
+#### HU-09 — Confirmación de alistamiento
+
+- **Independent:** puede implementarse como una operación específica sobre una orden existente.
+- **Negotiable:** los detalles del proceso de alistamiento pueden evolucionar.
+- **Valuable:** permite informar que el pedido está preparado para continuar con la logística.
+- **Estimable:** la funcionalidad está limitada a validar y actualizar el estado.
+- **Small:** corresponde a una operación puntual sobre el estado de una orden.
+- **Testable:** contempla escenarios exitosos, orden inexistente/no perteneciente y autenticación inválida.
+
+### Auditoría pendiente — HU-10 a HU-15
+
+Las historias HU-10 a HU-15 serán incorporadas por los demás integrantes del equipo.
+
+Una vez agregadas, deberán ser revisadas bajo los seis criterios INVEST y cumplir con los mismos criterios de calidad definidos para HU-01 a HU-09.
+
+La auditoría definitiva del Sprint 0 deberá contener las 15 historias de usuario.
 
 # 3. Estado de esta etapa
 
-Esta versión contiene únicamente **HU-01 a HU-05**, para ser utilizada como primera entrega funcional del backlog dentro del trabajo colaborativo.
+Esta versión contiene las historias **HU-01 a HU-09**, correspondientes a la primera etapa de trabajo colaborativo del backlog.
 
-Las **HU-06 a HU-15** se incorporarán posteriormente por los demás integrantes, conservando el mismo estándar:
+Las **HU-10 a HU-15** serán incorporadas posteriormente por los demás integrantes, conservando el mismo estándar:
 
 1. Historia de usuario.
 2. Prioridad MoSCoW.
