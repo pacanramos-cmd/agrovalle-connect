@@ -337,6 +337,62 @@ Small: corresponde a una funcionalidad concreta de consulta.
 
 Testable: contempla historial disponible y ausencia de transacciones.
 
+HU-15 — Búsqueda por rango de precio
+Como comprador,
+quiero buscar productos dentro de un rango de precio,
+para encontrar ofertas que se ajusten a mi presupuesto.
+
+Prioridad: Should Have
+Story Points: 5 (estimación inicial; pendiente de validación mediante Planning Poker)
+
+BDD
+Escenario 1 — Productos encontrados
+Given existen ofertas activas de productos con diferentes precios
+And un comprador consulta un rango de precio válido
+
+When realiza la búsqueda indicando precio mínimo y máximo
+
+Then el sistema retorna las ofertas cuyo precio está dentro del rango indicado
+And responde con HTTP 200 OK
+And obtiene las ofertas desde PostgreSQL.
+
+Escenario 2 — Sin resultados
+Given un comprador autenticado mediante JWT
+And no existen ofertas dentro del rango solicitado
+
+When realiza la búsqueda
+
+Then el sistema responde con HTTP 200 OK
+And retorna un arreglo JSON vacío.
+
+Escenario 3 — Rango inválido
+Given un comprador autenticado mediante JWT
+
+When proporciona un precio mínimo superior al precio máximo
+
+Then el sistema rechaza la solicitud
+And responde con HTTP 400 Bad Request.
+
+Contrato REST
+Método: GET
+Endpoint: /api/v1/productos?precioMin={precioMin}&precioMax={precioMax}
+Autenticación: JWT
+Resultado exitoso: 200 OK
+Persistencia: PostgreSQL
+
+INVEST — HU-15
+Independent: puede implementarse como un filtro adicional sobre el catálogo.
+
+Negotiable: los detalles del filtro y presentación de resultados pueden ajustarse.
+
+Valuable: ayuda al comprador a encontrar productos según su presupuesto.
+
+Estimable: el alcance está delimitado al filtrado por precio.
+
+Small: se concentra en una funcionalidad concreta de búsqueda.
+
+Testable: contempla resultados, ausencia de resultados y rangos inválidos.
+
 # 2. Auditoría INVEST — primera etapa
 
 | HU | Independent | Negotiable | Valuable | Estimable | Small | Testable |
