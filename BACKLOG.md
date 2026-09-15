@@ -248,6 +248,154 @@ And responde con HTTP 401 Unauthorized
 - **Persistencia:** PostgreSQL
 
 ---
+HU-13 — Inicio de sesión con JWT
+
+Como usuario registrado,
+quiero iniciar sesión mediante mis credenciales,
+para acceder de forma segura a las funcionalidades de AgroValle Connect.
+
+Prioridad: Must Have
+Story Points: 5 (estimación inicial; pendiente de validación mediante Planning Poker)
+
+BDD
+Escenario 1 — Inicio de sesión exitoso
+
+Given un usuario registrado
+And proporciona credenciales válidas
+
+When solicita el inicio de sesión
+
+Then el sistema valida las credenciales
+And genera un token JWT
+And responde con HTTP 200 OK.
+
+Escenario 2 — Credenciales inválidas
+
+Given un usuario registrado
+When proporciona credenciales incorrectas
+
+Then el sistema rechaza el inicio de sesión
+And responde con HTTP 401 Unauthorized.
+
+Contrato REST
+
+Método: POST
+Endpoint: /api/v1/auth/login
+Autenticación: Credenciales de usuario
+Resultado exitoso: 200 OK
+Persistencia: PostgreSQL
+
+INVEST — HU-13
+Independent: puede desarrollarse como una funcionalidad específica del módulo de autenticación.
+Negotiable: los detalles del mecanismo de autenticación pueden refinarse.
+Valuable: permite controlar el acceso seguro a la plataforma.
+Estimable: el alcance está delimitado a validar credenciales y generar JWT.
+Small: se concentra en una operación de autenticación.
+Testable: contempla credenciales válidas e inválidas con respuestas HTTP verificables.
+
+HU-14 — Historial de transacciones
+Como comprador,
+quiero consultar mi historial de transacciones,
+para revisar las compras realizadas anteriormente en la plataforma.
+
+Prioridad: Should Have
+Story Points: 5 (estimación inicial; pendiente de validación mediante Planning Poker)
+
+BDD
+Escenario 1 — Historial disponible
+Given un comprador autenticado mediante JWT
+And existen transacciones asociadas a su cuenta
+
+When consulta su historial
+
+Then el sistema retorna las transacciones correspondientes
+And responde con HTTP 200 OK
+And obtiene la información desde PostgreSQL.
+
+Escenario 2 — Sin transacciones
+Given un comprador autenticado mediante JWT
+And no existen transacciones asociadas
+
+When consulta su historial
+
+Then el sistema responde con HTTP 200 OK
+And retorna un arreglo JSON vacío.
+
+Contrato REST
+Método: GET
+Endpoint: /api/v1/transacciones/historial
+Autenticación: JWT
+Resultado exitoso: 200 OK
+Persistencia: PostgreSQL
+
+INVEST — HU-14
+Independent: puede implementarse como una consulta independiente sobre las transacciones.
+
+Negotiable: la información y filtros del historial pueden refinarse.
+
+Valuable: permite consultar las operaciones realizadas previamente.
+
+Estimable: el alcance está delimitado a consultar las transacciones del usuario.
+
+Small: corresponde a una funcionalidad concreta de consulta.
+
+Testable: contempla historial disponible y ausencia de transacciones.
+
+HU-15 — Búsqueda por rango de precio
+Como comprador,
+quiero buscar productos dentro de un rango de precio,
+para encontrar ofertas que se ajusten a mi presupuesto.
+
+Prioridad: Should Have
+Story Points: 5 (estimación inicial; pendiente de validación mediante Planning Poker)
+
+BDD
+Escenario 1 — Productos encontrados
+Given existen ofertas activas de productos con diferentes precios
+And un comprador consulta un rango de precio válido
+
+When realiza la búsqueda indicando precio mínimo y máximo
+
+Then el sistema retorna las ofertas cuyo precio está dentro del rango indicado
+And responde con HTTP 200 OK
+And obtiene las ofertas desde PostgreSQL.
+
+Escenario 2 — Sin resultados
+Given un comprador autenticado mediante JWT
+And no existen ofertas dentro del rango solicitado
+
+When realiza la búsqueda
+
+Then el sistema responde con HTTP 200 OK
+And retorna un arreglo JSON vacío.
+
+Escenario 3 — Rango inválido
+Given un comprador autenticado mediante JWT
+
+When proporciona un precio mínimo superior al precio máximo
+
+Then el sistema rechaza la solicitud
+And responde con HTTP 400 Bad Request.
+
+Contrato REST
+Método: GET
+Endpoint: /api/v1/productos?precioMin={precioMin}&precioMax={precioMax}
+Autenticación: JWT
+Resultado exitoso: 200 OK
+Persistencia: PostgreSQL
+
+INVEST — HU-15
+Independent: puede implementarse como un filtro adicional sobre el catálogo.
+
+Negotiable: los detalles del filtro y presentación de resultados pueden ajustarse.
+
+Valuable: ayuda al comprador a encontrar productos según su presupuesto.
+
+Estimable: el alcance está delimitado al filtrado por precio.
+
+Small: se concentra en una funcionalidad concreta de búsqueda.
+
+Testable: contempla resultados, ausencia de resultados y rangos inválidos.
 
 ## HU-06 — Registro de finca
 
