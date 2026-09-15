@@ -288,6 +288,55 @@ Valuable: permite controlar el acceso seguro a la plataforma.
 Estimable: el alcance está delimitado a validar credenciales y generar JWT.
 Small: se concentra en una operación de autenticación.
 Testable: contempla credenciales válidas e inválidas con respuestas HTTP verificables.
+
+HU-14 — Historial de transacciones
+Como comprador,
+quiero consultar mi historial de transacciones,
+para revisar las compras realizadas anteriormente en la plataforma.
+
+Prioridad: Should Have
+Story Points: 5 (estimación inicial; pendiente de validación mediante Planning Poker)
+
+BDD
+Escenario 1 — Historial disponible
+Given un comprador autenticado mediante JWT
+And existen transacciones asociadas a su cuenta
+
+When consulta su historial
+
+Then el sistema retorna las transacciones correspondientes
+And responde con HTTP 200 OK
+And obtiene la información desde PostgreSQL.
+
+Escenario 2 — Sin transacciones
+Given un comprador autenticado mediante JWT
+And no existen transacciones asociadas
+
+When consulta su historial
+
+Then el sistema responde con HTTP 200 OK
+And retorna un arreglo JSON vacío.
+
+Contrato REST
+Método: GET
+Endpoint: /api/v1/transacciones/historial
+Autenticación: JWT
+Resultado exitoso: 200 OK
+Persistencia: PostgreSQL
+
+INVEST — HU-14
+Independent: puede implementarse como una consulta independiente sobre las transacciones.
+
+Negotiable: la información y filtros del historial pueden refinarse.
+
+Valuable: permite consultar las operaciones realizadas previamente.
+
+Estimable: el alcance está delimitado a consultar las transacciones del usuario.
+
+Small: corresponde a una funcionalidad concreta de consulta.
+
+Testable: contempla historial disponible y ausencia de transacciones.
+
 # 2. Auditoría INVEST — primera etapa
 
 | HU | Independent | Negotiable | Valuable | Estimable | Small | Testable |
