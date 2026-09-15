@@ -19,6 +19,10 @@
 | HU-03 | Como Usuario, quiero ver los precios promedio del Valle para negociar mejor. | Consulta del promedio de transacciones recientes y resultado exacto en COP. | S | 8 |
 | HU-04 | Como Comprador, quiero filtrar las cosechas por municipio y categoría, para encontrar productos locales de mi interés rápidamente. | GET con municipio y categoría, respuesta 200 y ofertas activas en JSON. | M | 3 |
 | HU-05 | Como Comprador, quiero enviar una solicitud de contacto directo al agricultor, para acordar condiciones de compra y logística. | POST autenticado con JWT, persistencia de la interacción y confirmación de notificación. | M | 5 |
+| HU-06 | Como Agricultor, quiero registrar una finca con su información básica y ubicación, para asociar mis productos a un lugar de producción y facilitar su trazabilidad. | Registro autenticado de finca, validación de datos, persistencia e ID único. | S | 3 |
+| HU-07 | Como Agricultor, quiero consultar el inventario disponible de mis productos, para conocer las cantidades disponibles antes de aceptar o gestionar pedidos. | Consulta autenticada del inventario y cantidades disponibles. | M | 3 |
+| HU-08 | Como Comprador, quiero crear una orden de compra seleccionando productos disponibles, para solicitar formalmente los productos que deseo adquirir. | Creación autenticada de orden, validación de disponibilidad, persistencia e ID único. | M | 8 |
+| HU-09 | Como Agricultor, quiero confirmar el alistamiento de una orden de compra, para informar que los productos están preparados para continuar con el proceso logístico. | Actualización autenticada del estado de alistamiento y persistencia. | M | 5 |
 
 > **Nota de estimación:** los Story Points anteriores son una estimación inicial para organizar el backlog. El equipo debe validarlos mediante Planning Poker, utilizando la escala Fibonacci **1, 2, 3, 5, 8, 13**, antes de cerrar la versión definitiva.
 
@@ -242,6 +246,185 @@ And responde con HTTP 401 Unauthorized
 - **Autenticación:** JWT
 - **Resultado exitoso:** `200 OK`
 - **Persistencia:** PostgreSQL
+
+---
+
+## HU-06 — Registro de finca
+
+**Como** agricultor,
+
+**quiero** registrar una finca con su información básica y ubicación,
+
+**para** asociar mis productos a un lugar de producción y facilitar su trazabilidad.
+
+**Prioridad:** Should Have
+
+**Story Points:** 3
+
+### Escenario 1 — Registro exitoso
+
+```gherkin
+Given un agricultor autenticado mediante JWT
+And dispone de una cuenta registrada en AgroValle Connect
+When registra una finca proporcionando nombre, municipio y ubicación
+Then el sistema valida la información recibida
+And persiste la finca en PostgreSQL
+And genera un identificador único para la finca
+And responde con HTTP 201 Created
+
+### Escenario 2 — Datos obligatorios inválidos
+
+```gherkin
+Given un agricultor autenticado mediante JWT
+When intenta registrar una finca sin completar los datos obligatorios
+Then el sistema rechaza la solicitud
+And responde con HTTP 400 Bad Request
+And no crea el registro de la finca
+
+Contrato REST inicial
+Método: POST
+Endpoint: /api/v1/fincas
+Autenticación: JWT
+Resultado exitoso: 201 Created
+Persistencia: PostgreSQL
+
+---
+
+## HU-07 — Consulta de inventario
+
+Como agricultor,
+
+quiero consultar el inventario disponible de mis productos,
+
+para conocer las cantidades disponibles antes de aceptar o gestionar pedidos.
+
+Prioridad: Must Have
+
+Story Points: 3
+
+### Escenario 1 — Consulta exitosa
+
+```gherkin
+Given un agricultor autenticado mediante JWT
+And existen productos publicados asociados a su cuenta
+When consulta su inventario
+Then el sistema responde con HTTP 200 OK
+And retorna un arreglo JSON con los productos y sus cantidades disponibles
+
+### Escenario 2 — Inventario sin productos disponibles
+
+```gherkin
+Given un agricultor autenticado mediante JWT
+And no existen productos disponibles en su inventario
+When consulta su inventario
+Then el sistema responde con HTTP 200 OK
+And retorna un arreglo JSON vacío
+
+Contrato REST inicial
+Método: GET
+Endpoint: /api/v1/inventario
+Autenticación: JWT
+Resultado exitoso: 200 OK
+Fuente de datos: PostgreSQL
+
+---
+
+## HU-08 — Creación de orden de compra
+
+Como comprador,
+
+quiero crear una orden de compra seleccionando productos disponibles,
+
+para solicitar formalmente los productos que deseo adquirir.
+
+Prioridad: Must Have
+
+Story Points: 8
+
+### Escenario 1 — Creación exitosa
+
+```gherkin
+Given un comprador autenticado mediante JWT
+And existe una oferta activa con cantidad disponible
+When envía una solicitud para crear una orden indicando el producto y la cantidad solicitada
+Then el sistema valida la disponibilidad del producto
+And registra la orden de compra en PostgreSQL
+And genera un identificador único para la orden
+And responde con HTTP 201 Created
+
+### Escenario 2 — Cantidad superior al stock disponible
+
+```gherkin
+Given un comprador autenticado mediante JWT
+And existe una oferta activa con una cantidad disponible determinada
+When solicita una cantidad superior al stock disponible
+Then el sistema rechaza la solicitud
+And responde con HTTP 400 Bad Request
+And no crea la orden de compra
+
+### Escenario 3 — Usuario no autenticado
+
+```gherkin
+Given un usuario sin un JWT válido
+When intenta crear una orden de compra
+Then el sistema rechaza la solicitud
+And responde con HTTP 401 Unauthorized
+
+Contrato REST inicial
+Método: POST
+Endpoint: /api/v1/pedidos
+Autenticación: JWT
+Resultado exitoso: 201 Created
+Persistencia: PostgreSQL
+
+---
+
+## HU-09 — Confirmación de alistamiento
+
+Como agricultor,
+
+quiero confirmar el alistamiento de una orden de compra,
+
+para informar que los productos están preparados para continuar con el proceso logístico.
+
+Prioridad: Must Have
+
+Story Points: 5
+
+### Escenario 1 — Confirmación exitosa
+
+```gherkin
+Given un agricultor autenticado mediante JWT
+And existe una orden de compra asociada a uno de sus productos
+And la orden se encuentra pendiente de alistamiento
+When confirma que la orden está lista
+Then el sistema actualiza el estado de la orden
+And registra la actualización en PostgreSQL
+And responde con HTTP 200 OK
+
+### Escenario 2 — Orden inexistente o no asociada
+
+```gherkin
+Given un agricultor autenticado mediante JWT
+When intenta confirmar una orden inexistente o que no pertenece a sus productos
+Then el sistema rechaza la solicitud
+And responde con HTTP 404 Not Found
+And no modifica ninguna orden
+
+### Escenario 3 — Usuario no autenticado
+
+```gherkin
+Given un usuario sin un JWT válido
+When intenta confirmar el alistamiento de una orden
+Then el sistema rechaza la solicitud
+And responde con HTTP 401 Unauthorized
+
+Contrato REST inicial
+Método: PATCH
+Endpoint: /api/v1/pedidos/{id_pedido}/alistamiento
+Autenticación: JWT
+Resultado exitoso: 200 OK
+Persistencia: PostgreSQL
 
 ---
 
