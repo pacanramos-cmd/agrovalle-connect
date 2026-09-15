@@ -244,7 +244,50 @@ And responde con HTTP 401 Unauthorized
 - **Persistencia:** PostgreSQL
 
 ---
+HU-13 — Inicio de sesión con JWT
 
+Como usuario registrado,
+quiero iniciar sesión mediante mis credenciales,
+para acceder de forma segura a las funcionalidades de AgroValle Connect.
+
+Prioridad: Must Have
+Story Points: 5 (estimación inicial; pendiente de validación mediante Planning Poker)
+
+BDD
+Escenario 1 — Inicio de sesión exitoso
+
+Given un usuario registrado
+And proporciona credenciales válidas
+
+When solicita el inicio de sesión
+
+Then el sistema valida las credenciales
+And genera un token JWT
+And responde con HTTP 200 OK.
+
+Escenario 2 — Credenciales inválidas
+
+Given un usuario registrado
+When proporciona credenciales incorrectas
+
+Then el sistema rechaza el inicio de sesión
+And responde con HTTP 401 Unauthorized.
+
+Contrato REST
+
+Método: POST
+Endpoint: /api/v1/auth/login
+Autenticación: Credenciales de usuario
+Resultado exitoso: 200 OK
+Persistencia: PostgreSQL
+
+INVEST — HU-13
+Independent: puede desarrollarse como una funcionalidad específica del módulo de autenticación.
+Negotiable: los detalles del mecanismo de autenticación pueden refinarse.
+Valuable: permite controlar el acceso seguro a la plataforma.
+Estimable: el alcance está delimitado a validar credenciales y generar JWT.
+Small: se concentra en una operación de autenticación.
+Testable: contempla credenciales válidas e inválidas con respuestas HTTP verificables.
 # 2. Auditoría INVEST — primera etapa
 
 | HU | Independent | Negotiable | Valuable | Estimable | Small | Testable |
