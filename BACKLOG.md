@@ -668,6 +668,53 @@ Small: corresponde principalmente a una operación de consulta.
 
 Testable: contempla escenarios de consulta exitosa y pedido inexistente.
 
+HU-12 — Notificación al agricultor
+Como agricultor,
+quiero recibir una notificación cuando se genere o actualice un pedido relacionado con mis productos,
+para conocer oportunamente los cambios que requieren mi atención.
+
+Prioridad: Should Have
+Story Points: 5 (estimación inicial; pendiente de validación mediante Planning Poker)
+
+BDD
+Escenario 1 — Notificación generada
+Given un agricultor autenticado mediante JWT
+And existe un pedido relacionado con uno de sus productos
+
+When se genera una actualización relevante del pedido
+
+Then el sistema registra la notificación correspondiente
+And persiste la información en PostgreSQL
+And responde con HTTP 200 OK.
+
+Escenario 2 — Usuario no autenticado
+Given un usuario sin JWT válido
+
+When intenta consultar sus notificaciones
+
+Then el sistema rechaza la solicitud
+And responde con HTTP 401 Unauthorized.
+
+Contrato REST
+Método: GET
+Endpoint: /api/v1/notificaciones
+Autenticación: JWT
+Resultado exitoso: 200 OK
+Persistencia: PostgreSQL
+
+INVEST — HU-12
+Independent: puede desarrollarse como una funcionalidad diferenciada del procesamiento de pedidos.
+
+Negotiable: el contenido y presentación de las notificaciones pueden ajustarse.
+
+Valuable: informa oportunamente al agricultor sobre cambios relevantes.
+
+Estimable: el alcance está delimitado al registro y consulta de notificaciones.
+
+Small: se concentra en la gestión de notificaciones.
+
+Testable: contempla escenarios de generación y acceso no autorizado.
+
 # 2. Auditoría INVEST
 
 ### Auditoría actual — HU-01 a HU-09
