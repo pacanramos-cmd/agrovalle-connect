@@ -1,6 +1,6 @@
 # Product Backlog — AgroValle Connect
 
-> **Primera etapa:** HU-01 a HU-05  
+> **Sprint 0:** HU-01 a HU-15
 > **Priorización:** MoSCoW (M = Must, S = Should, C = Could, W = Won't)  
 > **Estimación:** Story Points (Fibonacci, vía Planning Poker)
 
@@ -10,7 +10,7 @@
 
 ---
 
-## Resumen del backlog — primera etapa
+## Resumen del backlog
 
 | ID | Historia de Usuario | Criterios de Aceptación (BDD) | MoSCoW | Story Points |
 |---|---|---|:---:|---:|
@@ -23,6 +23,12 @@
 | HU-07 | Como Agricultor, quiero consultar el inventario disponible de mis productos, para conocer las cantidades disponibles antes de aceptar o gestionar pedidos. | Consulta autenticada del inventario y cantidades disponibles. | M | 3 |
 | HU-08 | Como Comprador, quiero crear una orden de compra seleccionando productos disponibles, para solicitar formalmente los productos que deseo adquirir. | Creación autenticada de orden, validación de disponibilidad, persistencia e ID único. | M | 8 |
 | HU-09 | Como Agricultor, quiero confirmar el alistamiento de una orden de compra, para informar que los productos están preparados para continuar con el proceso logístico. | Actualización autenticada del estado de alistamiento y persistencia. | M | 5 |
+| HU-10 | Como Agricultor, quiero programar el despacho de un pedido confirmado, para coordinar la entrega de los productos con el comprador. | Programación autenticada del despacho, validación de pedido, actualización y persistencia. | M | 5 |
+| HU-11 | Como Comprador, quiero consultar el estado de mi pedido, para conocer el avance de la preparación y entrega de los productos. | Consulta autenticada del estado del pedido y respuesta con información actualizada. | M | 5 |
+| HU-12 | Como Agricultor, quiero recibir una notificación cuando se genere o actualice un pedido relacionado con mis productos, para conocer oportunamente los cambios que requieren mi atención. | Registro de la notificación, persistencia en PostgreSQL y acceso autenticado. | S | 5 |
+| HU-13 | Como usuario registrado, quiero iniciar sesión mediante mis credenciales, para acceder de forma segura a las funcionalidades de AgroValle Connect. | Validación de credenciales, generación de JWT y respuesta 200 o 401 según corresponda. | M | 5 |
+| HU-14 | Como Comprador, quiero consultar mi historial de transacciones, para revisar las compras realizadas anteriormente en la plataforma. | Consulta autenticada del historial, respuesta 200 y datos provenientes de PostgreSQL. | S | 5 |
+| HU-15 | Como Comprador, quiero buscar productos dentro de un rango de precio, para encontrar ofertas que se ajusten a mi presupuesto. | Búsqueda autenticada por rango, respuesta 200 o 400 según los parámetros recibidos. | S | 5 |
 
 > **Nota de estimación:** los Story Points anteriores son una estimación inicial para organizar el backlog. El equipo debe validarlos mediante Planning Poker, utilizando la escala Fibonacci **1, 2, 3, 5, 8, 13**, antes de cerrar la versión definitiva.
 
@@ -248,154 +254,6 @@ And responde con HTTP 401 Unauthorized
 - **Persistencia:** PostgreSQL
 
 ---
-HU-13 — Inicio de sesión con JWT
-
-Como usuario registrado,
-quiero iniciar sesión mediante mis credenciales,
-para acceder de forma segura a las funcionalidades de AgroValle Connect.
-
-Prioridad: Must Have
-Story Points: 5 (estimación inicial; pendiente de validación mediante Planning Poker)
-
-BDD
-Escenario 1 — Inicio de sesión exitoso
-
-Given un usuario registrado
-And proporciona credenciales válidas
-
-When solicita el inicio de sesión
-
-Then el sistema valida las credenciales
-And genera un token JWT
-And responde con HTTP 200 OK.
-
-Escenario 2 — Credenciales inválidas
-
-Given un usuario registrado
-When proporciona credenciales incorrectas
-
-Then el sistema rechaza el inicio de sesión
-And responde con HTTP 401 Unauthorized.
-
-Contrato REST
-
-Método: POST
-Endpoint: /api/v1/auth/login
-Autenticación: Credenciales de usuario
-Resultado exitoso: 200 OK
-Persistencia: PostgreSQL
-
-INVEST — HU-13
-Independent: puede desarrollarse como una funcionalidad específica del módulo de autenticación.
-Negotiable: los detalles del mecanismo de autenticación pueden refinarse.
-Valuable: permite controlar el acceso seguro a la plataforma.
-Estimable: el alcance está delimitado a validar credenciales y generar JWT.
-Small: se concentra en una operación de autenticación.
-Testable: contempla credenciales válidas e inválidas con respuestas HTTP verificables.
-
-HU-14 — Historial de transacciones
-Como comprador,
-quiero consultar mi historial de transacciones,
-para revisar las compras realizadas anteriormente en la plataforma.
-
-Prioridad: Should Have
-Story Points: 5 (estimación inicial; pendiente de validación mediante Planning Poker)
-
-BDD
-Escenario 1 — Historial disponible
-Given un comprador autenticado mediante JWT
-And existen transacciones asociadas a su cuenta
-
-When consulta su historial
-
-Then el sistema retorna las transacciones correspondientes
-And responde con HTTP 200 OK
-And obtiene la información desde PostgreSQL.
-
-Escenario 2 — Sin transacciones
-Given un comprador autenticado mediante JWT
-And no existen transacciones asociadas
-
-When consulta su historial
-
-Then el sistema responde con HTTP 200 OK
-And retorna un arreglo JSON vacío.
-
-Contrato REST
-Método: GET
-Endpoint: /api/v1/transacciones/historial
-Autenticación: JWT
-Resultado exitoso: 200 OK
-Persistencia: PostgreSQL
-
-INVEST — HU-14
-Independent: puede implementarse como una consulta independiente sobre las transacciones.
-
-Negotiable: la información y filtros del historial pueden refinarse.
-
-Valuable: permite consultar las operaciones realizadas previamente.
-
-Estimable: el alcance está delimitado a consultar las transacciones del usuario.
-
-Small: corresponde a una funcionalidad concreta de consulta.
-
-Testable: contempla historial disponible y ausencia de transacciones.
-
-HU-15 — Búsqueda por rango de precio
-Como comprador,
-quiero buscar productos dentro de un rango de precio,
-para encontrar ofertas que se ajusten a mi presupuesto.
-
-Prioridad: Should Have
-Story Points: 5 (estimación inicial; pendiente de validación mediante Planning Poker)
-
-BDD
-Escenario 1 — Productos encontrados
-Given existen ofertas activas de productos con diferentes precios
-And un comprador consulta un rango de precio válido
-
-When realiza la búsqueda indicando precio mínimo y máximo
-
-Then el sistema retorna las ofertas cuyo precio está dentro del rango indicado
-And responde con HTTP 200 OK
-And obtiene las ofertas desde PostgreSQL.
-
-Escenario 2 — Sin resultados
-Given un comprador autenticado mediante JWT
-And no existen ofertas dentro del rango solicitado
-
-When realiza la búsqueda
-
-Then el sistema responde con HTTP 200 OK
-And retorna un arreglo JSON vacío.
-
-Escenario 3 — Rango inválido
-Given un comprador autenticado mediante JWT
-
-When proporciona un precio mínimo superior al precio máximo
-
-Then el sistema rechaza la solicitud
-And responde con HTTP 400 Bad Request.
-
-Contrato REST
-Método: GET
-Endpoint: /api/v1/productos?precioMin={precioMin}&precioMax={precioMax}
-Autenticación: JWT
-Resultado exitoso: 200 OK
-Persistencia: PostgreSQL
-
-INVEST — HU-15
-Independent: puede implementarse como un filtro adicional sobre el catálogo.
-
-Negotiable: los detalles del filtro y presentación de resultados pueden ajustarse.
-
-Valuable: ayuda al comprador a encontrar productos según su presupuesto.
-
-Estimable: el alcance está delimitado al filtrado por precio.
-
-Small: se concentra en una funcionalidad concreta de búsqueda.
-
-Testable: contempla resultados, ausencia de resultados y rangos inválidos.
 
 ## HU-06 — Registro de finca
 
@@ -573,8 +431,10 @@ Endpoint: /api/v1/pedidos/{id_pedido}/alistamiento
 Autenticación: JWT
 Resultado exitoso: 200 OK
 Persistencia: PostgreSQL
+
 ---
-HU-10 — Programación de despacho
+
+## HU-10 — Programación de despacho
 Como agricultor,
 quiero programar el despacho de un pedido confirmado,
 para coordinar la entrega de los productos con el comprador.
@@ -583,21 +443,22 @@ Prioridad: Must Have
 Story Points: 5 (estimación inicial; pendiente de validación mediante Planning Poker)
 
 BDD
-Escenario 1 — Programación exitosa
+### Escenario 1 — Programación exitosa
+
+```gherkin
 Given un agricultor autenticado mediante JWT
 And existe un pedido confirmado asociado a uno de sus productos
-
 When registra la fecha y hora de despacho
-
 Then el sistema valida la información recibida
 And actualiza la programación del pedido
 And persiste la información en PostgreSQL
 And responde con HTTP 200 OK.
 
-Escenario 2 — Pedido no disponible
+### Escenario 2 — Pedido no disponible
+
+```gherkin
 Given un agricultor autenticado mediante JWT
 When intenta programar el despacho de un pedido inexistente
-
 Then el sistema rechaza la solicitud
 And responde con HTTP 404 Not Found
 And no modifica ningún registro.
@@ -609,20 +470,9 @@ Autenticación: JWT
 Resultado exitoso: 200 OK
 Persistencia: PostgreSQL
 
-INVEST — HU-10
-Independent: puede desarrollarse como una operación específica posterior a la confirmación del pedido.
+---
 
-Negotiable: los detalles de fecha y hora de despacho pueden ajustarse durante el desarrollo.
-
-Valuable: permite coordinar el proceso de entrega de los productos.
-
-Estimable: el alcance está delimitado a programar el despacho de un pedido.
-
-Small: se concentra en actualizar la programación de una orden.
-
-Testable: cuenta con escenarios BDD y respuestas HTTP verificables.
-
-HU-11 — Seguimiento de pedido
+## HU-11 — Seguimiento de pedido
 Como comprador,
 quiero consultar el estado de mi pedido,
 para conocer el avance de la preparación y entrega de los productos.
@@ -631,20 +481,21 @@ Prioridad: Must Have
 Story Points: 5 (estimación inicial; pendiente de validación mediante Planning Poker)
 
 BDD
-Escenario 1 — Consulta exitosa
+
+```gherkin
+### Escenario 1 — Consulta exitosa
 Given un comprador autenticado mediante JWT
 And existe un pedido asociado a su cuenta
-
 When consulta el estado del pedido
-
 Then el sistema retorna la información actualizada del pedido
 And responde con HTTP 200 OK
 And obtiene la información desde PostgreSQL.
 
-Escenario 2 — Pedido inexistente
+### Escenario 2 — Pedido inexistente
+
+```gherkin
 Given un comprador autenticado mediante JWT
 When consulta un pedido inexistente
-
 Then el sistema responde con HTTP 404 Not Found
 And no retorna información de otro pedido.
 
@@ -655,43 +506,31 @@ Autenticación: JWT
 Resultado exitoso: 200 OK
 Persistencia: PostgreSQL
 
-INVEST — HU-11
-Independent: puede implementarse como una consulta independiente sobre los pedidos.
+---
 
-Negotiable: la información mostrada en el seguimiento puede refinarse.
-
-Valuable: permite al comprador conocer el avance de su pedido.
-
-Estimable: el alcance está delimitado a consultar el estado de una orden.
-
-Small: corresponde principalmente a una operación de consulta.
-
-Testable: contempla escenarios de consulta exitosa y pedido inexistente.
-
-HU-12 — Notificación al agricultor
-Como agricultor,
-quiero recibir una notificación cuando se genere o actualice un pedido relacionado con mis productos,
-para conocer oportunamente los cambios que requieren mi atención.
-
+## HU-12 — Notificación al agricultor
+Como agricultor, quiero consultar las notificaciones relacionadas con mis pedidos, para conocer oportunamente los cambios que requieren mi atención
 Prioridad: Should Have
 Story Points: 5 (estimación inicial; pendiente de validación mediante Planning Poker)
 
 BDD
-Escenario 1 — Notificación generada
+
+### Escenario 1 — Notificación generada
+
+```gherkin
 Given un agricultor autenticado mediante JWT
 And existe un pedido relacionado con uno de sus productos
-
 When se genera una actualización relevante del pedido
-
 Then el sistema registra la notificación correspondiente
 And persiste la información en PostgreSQL
 And responde con HTTP 200 OK.
 
-Escenario 2 — Usuario no autenticado
+
+### Escenario 2 — Usuario no autenticado
+
+```gherkin
 Given un usuario sin JWT válido
-
 When intenta consultar sus notificaciones
-
 Then el sistema rechaza la solicitud
 And responde con HTTP 401 Unauthorized.
 
@@ -702,22 +541,132 @@ Autenticación: JWT
 Resultado exitoso: 200 OK
 Persistencia: PostgreSQL
 
-INVEST — HU-12
-Independent: puede desarrollarse como una funcionalidad diferenciada del procesamiento de pedidos.
+---
 
-Negotiable: el contenido y presentación de las notificaciones pueden ajustarse.
+## HU-13 — Inicio de sesión con JWT
 
-Valuable: informa oportunamente al agricultor sobre cambios relevantes.
+Como usuario registrado,
+quiero iniciar sesión mediante mis credenciales,
+para acceder de forma segura a las funcionalidades de AgroValle Connect.
 
-Estimable: el alcance está delimitado al registro y consulta de notificaciones.
+Prioridad: Must Have
+Story Points: 5 (estimación inicial; pendiente de validación mediante Planning Poker)
 
-Small: se concentra en la gestión de notificaciones.
+BDD
+### Escenario 1 — Inicio de sesión exitoso
 
-Testable: contempla escenarios de generación y acceso no autorizado.
+```gherkin
+Given un usuario registrado
+And proporciona credenciales válidas
+When solicita el inicio de sesión
+Then el sistema valida las credenciales
+And genera un token JWT
+And responde con HTTP 200 OK.
+
+### Escenario 2 — Credenciales inválidas
+
+```gherkin
+Given un usuario registrado
+When proporciona credenciales incorrectas
+Then el sistema rechaza el inicio de sesión
+And responde con HTTP 401 Unauthorized.
+
+Contrato REST
+
+Método: POST
+Endpoint: /api/v1/auth/login
+Autenticación: Credenciales de usuario
+Resultado exitoso: 200 OK
+Persistencia: PostgreSQL
+
+---
+
+## HU-14 — Historial de transacciones
+Como comprador,
+quiero consultar mi historial de transacciones,
+para revisar las compras realizadas anteriormente en la plataforma.
+
+Prioridad: Should Have
+Story Points: 5 (estimación inicial; pendiente de validación mediante Planning Poker)
+
+BDD
+### Escenario 1 — Historial disponible
+
+```gherkin
+Given un comprador autenticado mediante JWT
+And existen transacciones asociadas a su cuenta
+When consulta su historial
+Then el sistema retorna las transacciones correspondientes
+And responde con HTTP 200 OK
+And obtiene la información desde PostgreSQL.
+
+### Escenario 2 — Sin transacciones
+
+```gherkin
+Given un comprador autenticado mediante JWT
+And no existen transacciones asociadas
+When consulta su historial
+Then el sistema responde con HTTP 200 OK
+And retorna un arreglo JSON vacío.
+
+Contrato REST
+Método: GET
+Endpoint: /api/v1/transacciones/historial
+Autenticación: JWT
+Resultado exitoso: 200 OK
+Persistencia: PostgreSQL
+
+---
+
+## HU-15 — Búsqueda por rango de precio
+Como comprador,
+quiero buscar productos dentro de un rango de precio,
+para encontrar ofertas que se ajusten a mi presupuesto.
+
+Prioridad: Should Have
+Story Points: 5 (estimación inicial; pendiente de validación mediante Planning Poker)
+
+BDD
+### Escenario 1 — Productos encontrados
+
+```gherkin
+Given un comprador autenticado mediante JWT
+And existen ofertas activas de productos con diferentes precios
+And consulta un rango de precio válido
+When realiza la búsqueda indicando precio mínimo y máximo
+Then el sistema retorna las ofertas cuyo precio está dentro del rango indicado
+And responde con HTTP 200 OK
+And obtiene las ofertas desde PostgreSQL.
+
+### Escenario 2 — Sin resultados
+
+```gherkin
+Given un comprador autenticado mediante JWT
+And no existen ofertas dentro del rango solicitado
+When realiza la búsqueda
+Then el sistema responde con HTTP 200 OK
+And retorna un arreglo JSON vacío.
+
+### Escenario 3 — Rango inválido
+
+```gherkin
+Given un comprador autenticado mediante JWT
+When proporciona un precio mínimo superior al precio máximo
+Then el sistema rechaza la solicitud
+And responde con HTTP 400 Bad Request.
+
+Contrato REST
+Método: GET
+Endpoint: /api/v1/productos?precioMin={precioMin}&precioMax={precioMax}
+Autenticación: JWT
+Resultado exitoso: 200 OK
+Persistencia: PostgreSQL
+
+---
 
 # 2. Auditoría INVEST
 
-### Auditoría actual — HU-01 a HU-09
+### Auditoría INVEST — HU-01 a HU-15
 
 | HU | Independent | Negotiable | Valuable | Estimable | Small | Testable |
 |---|---|---|---|---|---|---|
@@ -730,12 +679,18 @@ Testable: contempla escenarios de generación y acceso no autorizado.
 | HU-07 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
 | HU-08 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
 | HU-09 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| HU-10 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| HU-11 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| HU-12 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| HU-13 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| HU-14 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| HU-15 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
 
 ### Justificación INVEST — HU-01 a HU-05
 
 Las HU-01 a HU-05 cuentan con criterios de aceptación BDD y contratos REST definidos en el backlog. Su revisión INVEST se mantiene de acuerdo con el alcance funcional establecido para cada historia.
 
-### Justificación INVEST — HU-06 a HU-09
+### Justificación INVEST — HU-06 a HU-15
 
 #### HU-06 — Registro de finca
 
@@ -773,26 +728,75 @@ Las HU-01 a HU-05 cuentan con criterios de aceptación BDD y contratos REST defi
 - **Small:** corresponde a una operación puntual sobre el estado de una orden.
 - **Testable:** contempla escenarios exitosos, orden inexistente/no perteneciente y autenticación inválida.
 
-### Auditoría pendiente — HU-10 a HU-15
+#### HU-10 — Programación de despacho
+- **Independent: puede desarrollarse como una operación específica posterior a la confirmación del pedido.
+- **Negotiable: los detalles de fecha y hora de despacho pueden ajustarse durante el desarrollo.
+- **Valuable: permite coordinar el proceso de entrega de los productos.
+- **Estimable: el alcance está delimitado a programar el despacho de un pedido.
+- **Small: se concentra en actualizar la programación de una orden.
+- **Testable: cuenta con escenarios BDD y respuestas HTTP verificables.
 
-Las historias HU-10 a HU-15 serán incorporadas por los demás integrantes del equipo.
+#### HU-11 — Seguimiento de pedido
 
-Una vez agregadas, deberán ser revisadas bajo los seis criterios INVEST y cumplir con los mismos criterios de calidad definidos para HU-01 a HU-09.
+- **Independent: puede implementarse como una consulta independiente sobre los pedidos.
+- **Negotiable: la información mostrada en el seguimiento puede refinarse.
+- **Valuable: permite al comprador conocer el avance de su pedido.
+- **Estimable: el alcance está delimitado a consultar el estado de una orden.
+- **Small: corresponde principalmente a una operación de consulta.
+- **Testable: contempla escenarios de consulta exitosa y pedido inexistente.
 
-La auditoría definitiva del Sprint 0 deberá contener las 15 historias de usuario.
+#### HU-12 — Notificación al agricultor
+
+- **Independent: puede desarrollarse como una funcionalidad diferenciada del procesamiento de pedidos.
+- **Negotiable: el contenido y presentación de las notificaciones pueden ajustarse.
+- **Valuable: informa oportunamente al agricultor sobre cambios relevantes.
+- **Estimable: el alcance está delimitado al registro y consulta de notificaciones.
+- **Small: se concentra en la gestión de notificaciones.
+- **Testable: contempla escenarios de generación y acceso no autorizado.
+
+#### HU-13 — Inicio de sesión con JWT
+
+- **Independent: puede desarrollarse como una funcionalidad específica del módulo de autenticación.
+- **Negotiable: los detalles del mecanismo de autenticación pueden refinarse.
+- **Valuable: permite controlar el acceso seguro a la plataforma.
+- **Estimable: el alcance está delimitado a validar credenciales y generar JWT.
+- **Small: se concentra en una operación de autenticación.
+- **Testable: contempla credenciales válidas e inválidas con respuestas HTTP verificables.
+
+#### HU-14 — Historial de transacciones
+
+- **Independent: puede implementarse como una consulta independiente sobre las transacciones.
+- **Negotiable: la información y filtros del historial pueden refinarse.
+- **Valuable: permite consultar las operaciones realizadas previamente.
+- **Estimable: el alcance está delimitado a consultar las transacciones del usuario.
+- **Small: corresponde a una funcionalidad concreta de consulta.
+- **Testable: contempla historial disponible y ausencia de transacciones.
+
+#### HU-15 — Búsqueda por rango de precio
+
+- **Independent: puede implementarse como un filtro adicional sobre el catálogo.
+- **Negotiable: los detalles del filtro y presentación de resultados pueden ajustarse.
+- **Valuable: ayuda al comprador a encontrar productos según su presupuesto.
+- **Estimable: el alcance está delimitado al filtrado por precio.
+- **Small: se concentra en una funcionalidad concreta de búsqueda.
+- **Testable: contempla resultados, ausencia de resultados y rangos inválidos.
+
+
 
 # 3. Estado de esta etapa
 
-Esta versión contiene las historias **HU-01 a HU-09**, correspondientes a la primera etapa de trabajo colaborativo del backlog.
+Esta versión integra las **15 historias de usuario (HU-01 a HU-15)** definidas para el Sprint 0 de AgroValle Connect.
 
-Las **HU-10 a HU-15** serán incorporadas posteriormente por los demás integrantes, conservando el mismo estándar:
+Cada historia cuenta con:
 
 1. Historia de usuario.
 2. Prioridad MoSCoW.
-3. Story Points Fibonacci.
-4. Escenarios Given-When-Then.
-5. Endpoint REST y autenticación cuando corresponda.
+3. Story Points mediante escala Fibonacci como estimación inicial.
+4. Escenarios de aceptación en formato Given-When-Then.
+5. Endpoint REST y autenticación cuando corresponde.
 6. Persistencia o resultado esperado.
-7. Auditoría INVEST.
+7. Auditoría bajo los seis criterios INVEST.
 
-> **Importante:** la versión final de Sprint 0 deberá integrar las 15 historias de usuario exigidas por la guía de trabajo.
+Los Story Points registrados corresponden a una estimación inicial del equipo y quedan sujetos a validación mediante Planning Poker antes de establecer la versión definitiva del backlog.
+
+La versión final del Sprint 0 deberá conservar la trazabilidad entre las historias de usuario, sus criterios BDD, la priorización MoSCoW, la estimación Fibonacci y la auditoría INVEST.
