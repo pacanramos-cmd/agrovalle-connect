@@ -622,6 +622,52 @@ Small: se concentra en actualizar la programación de una orden.
 
 Testable: cuenta con escenarios BDD y respuestas HTTP verificables.
 
+HU-11 — Seguimiento de pedido
+Como comprador,
+quiero consultar el estado de mi pedido,
+para conocer el avance de la preparación y entrega de los productos.
+
+Prioridad: Must Have
+Story Points: 5 (estimación inicial; pendiente de validación mediante Planning Poker)
+
+BDD
+Escenario 1 — Consulta exitosa
+Given un comprador autenticado mediante JWT
+And existe un pedido asociado a su cuenta
+
+When consulta el estado del pedido
+
+Then el sistema retorna la información actualizada del pedido
+And responde con HTTP 200 OK
+And obtiene la información desde PostgreSQL.
+
+Escenario 2 — Pedido inexistente
+Given un comprador autenticado mediante JWT
+When consulta un pedido inexistente
+
+Then el sistema responde con HTTP 404 Not Found
+And no retorna información de otro pedido.
+
+Contrato REST
+Método: GET
+Endpoint: /api/v1/pedidos/{id_pedido}/seguimiento
+Autenticación: JWT
+Resultado exitoso: 200 OK
+Persistencia: PostgreSQL
+
+INVEST — HU-11
+Independent: puede implementarse como una consulta independiente sobre los pedidos.
+
+Negotiable: la información mostrada en el seguimiento puede refinarse.
+
+Valuable: permite al comprador conocer el avance de su pedido.
+
+Estimable: el alcance está delimitado a consultar el estado de una orden.
+
+Small: corresponde principalmente a una operación de consulta.
+
+Testable: contempla escenarios de consulta exitosa y pedido inexistente.
+
 # 2. Auditoría INVEST
 
 ### Auditoría actual — HU-01 a HU-09
