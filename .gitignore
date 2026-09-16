@@ -43,3 +43,5 @@ application-secrets.yml
 
 ### Logs ###
 *.log
+
+node_modules/
