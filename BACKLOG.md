@@ -573,8 +573,55 @@ Endpoint: /api/v1/pedidos/{id_pedido}/alistamiento
 Autenticación: JWT
 Resultado exitoso: 200 OK
 Persistencia: PostgreSQL
-
 ---
+HU-10 — Programación de despacho
+Como agricultor,
+quiero programar el despacho de un pedido confirmado,
+para coordinar la entrega de los productos con el comprador.
+
+Prioridad: Must Have
+Story Points: 5 (estimación inicial; pendiente de validación mediante Planning Poker)
+
+BDD
+Escenario 1 — Programación exitosa
+Given un agricultor autenticado mediante JWT
+And existe un pedido confirmado asociado a uno de sus productos
+
+When registra la fecha y hora de despacho
+
+Then el sistema valida la información recibida
+And actualiza la programación del pedido
+And persiste la información en PostgreSQL
+And responde con HTTP 200 OK.
+
+Escenario 2 — Pedido no disponible
+Given un agricultor autenticado mediante JWT
+When intenta programar el despacho de un pedido inexistente
+
+Then el sistema rechaza la solicitud
+And responde con HTTP 404 Not Found
+And no modifica ningún registro.
+
+Contrato REST
+Método: PATCH
+Endpoint: /api/v1/pedidos/{id_pedido}/despacho
+Autenticación: JWT
+Resultado exitoso: 200 OK
+Persistencia: PostgreSQL
+
+INVEST — HU-10
+Independent: puede desarrollarse como una operación específica posterior a la confirmación del pedido.
+
+Negotiable: los detalles de fecha y hora de despacho pueden ajustarse durante el desarrollo.
+
+Valuable: permite coordinar el proceso de entrega de los productos.
+
+Estimable: el alcance está delimitado a programar el despacho de un pedido.
+
+Small: se concentra en actualizar la programación de una orden.
+
+Testable: cuenta con escenarios BDD y respuestas HTTP verificables.
+
 # 2. Auditoría INVEST
 
 ### Auditoría actual — HU-01 a HU-09
