@@ -15,6 +15,7 @@ Contrato técnico de calidad basado en ISO/IEC 25010. Ninguna Historia de Usuari
 **Equipo AgroValle Connect**
 Firmado (nombres de todos los integrantes confirmando el cumplimiento):
 
-- _Nombre 1_
-- _Nombre 2_
-- _Nombre 3_
+- Andres Felipe Ramos
+- Luis Felipe Porras 
+- Santiago Narvaez Rivera
+- Milton Adolfo Cortes

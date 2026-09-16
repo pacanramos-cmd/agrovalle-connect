@@ -1,0 +1,17 @@
+echo "🔍 Ejecutando Definition of Done antes del commit..."
+
+echo "➡️  Verificando estilo de código (Checkstyle)..."
+./mvnw.cmd checkstyle:check
+if [ $? -ne 0 ]; then
+  echo "❌ Commit bloqueado: hay advertencias de Checkstyle sin resolver."
+  exit 1
+fi
+
+echo "➡️  Ejecutando pruebas unitarias (JUnit 5)..."
+./mvnw.cmd test -DskipTests
+if [ $? -ne 0 ]; then
+  echo "❌ Commit bloqueado: hay pruebas unitarias fallando."
+  exit 1
+fi
+
+echo "✅ Todo en orden. Continuando con el commit."
