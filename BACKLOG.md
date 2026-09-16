@@ -573,8 +573,148 @@ Endpoint: /api/v1/pedidos/{id_pedido}/alistamiento
 Autenticación: JWT
 Resultado exitoso: 200 OK
 Persistencia: PostgreSQL
-
 ---
+HU-10 — Programación de despacho
+Como agricultor,
+quiero programar el despacho de un pedido confirmado,
+para coordinar la entrega de los productos con el comprador.
+
+Prioridad: Must Have
+Story Points: 5 (estimación inicial; pendiente de validación mediante Planning Poker)
+
+BDD
+Escenario 1 — Programación exitosa
+Given un agricultor autenticado mediante JWT
+And existe un pedido confirmado asociado a uno de sus productos
+
+When registra la fecha y hora de despacho
+
+Then el sistema valida la información recibida
+And actualiza la programación del pedido
+And persiste la información en PostgreSQL
+And responde con HTTP 200 OK.
+
+Escenario 2 — Pedido no disponible
+Given un agricultor autenticado mediante JWT
+When intenta programar el despacho de un pedido inexistente
+
+Then el sistema rechaza la solicitud
+And responde con HTTP 404 Not Found
+And no modifica ningún registro.
+
+Contrato REST
+Método: PATCH
+Endpoint: /api/v1/pedidos/{id_pedido}/despacho
+Autenticación: JWT
+Resultado exitoso: 200 OK
+Persistencia: PostgreSQL
+
+INVEST — HU-10
+Independent: puede desarrollarse como una operación específica posterior a la confirmación del pedido.
+
+Negotiable: los detalles de fecha y hora de despacho pueden ajustarse durante el desarrollo.
+
+Valuable: permite coordinar el proceso de entrega de los productos.
+
+Estimable: el alcance está delimitado a programar el despacho de un pedido.
+
+Small: se concentra en actualizar la programación de una orden.
+
+Testable: cuenta con escenarios BDD y respuestas HTTP verificables.
+
+HU-11 — Seguimiento de pedido
+Como comprador,
+quiero consultar el estado de mi pedido,
+para conocer el avance de la preparación y entrega de los productos.
+
+Prioridad: Must Have
+Story Points: 5 (estimación inicial; pendiente de validación mediante Planning Poker)
+
+BDD
+Escenario 1 — Consulta exitosa
+Given un comprador autenticado mediante JWT
+And existe un pedido asociado a su cuenta
+
+When consulta el estado del pedido
+
+Then el sistema retorna la información actualizada del pedido
+And responde con HTTP 200 OK
+And obtiene la información desde PostgreSQL.
+
+Escenario 2 — Pedido inexistente
+Given un comprador autenticado mediante JWT
+When consulta un pedido inexistente
+
+Then el sistema responde con HTTP 404 Not Found
+And no retorna información de otro pedido.
+
+Contrato REST
+Método: GET
+Endpoint: /api/v1/pedidos/{id_pedido}/seguimiento
+Autenticación: JWT
+Resultado exitoso: 200 OK
+Persistencia: PostgreSQL
+
+INVEST — HU-11
+Independent: puede implementarse como una consulta independiente sobre los pedidos.
+
+Negotiable: la información mostrada en el seguimiento puede refinarse.
+
+Valuable: permite al comprador conocer el avance de su pedido.
+
+Estimable: el alcance está delimitado a consultar el estado de una orden.
+
+Small: corresponde principalmente a una operación de consulta.
+
+Testable: contempla escenarios de consulta exitosa y pedido inexistente.
+
+HU-12 — Notificación al agricultor
+Como agricultor,
+quiero recibir una notificación cuando se genere o actualice un pedido relacionado con mis productos,
+para conocer oportunamente los cambios que requieren mi atención.
+
+Prioridad: Should Have
+Story Points: 5 (estimación inicial; pendiente de validación mediante Planning Poker)
+
+BDD
+Escenario 1 — Notificación generada
+Given un agricultor autenticado mediante JWT
+And existe un pedido relacionado con uno de sus productos
+
+When se genera una actualización relevante del pedido
+
+Then el sistema registra la notificación correspondiente
+And persiste la información en PostgreSQL
+And responde con HTTP 200 OK.
+
+Escenario 2 — Usuario no autenticado
+Given un usuario sin JWT válido
+
+When intenta consultar sus notificaciones
+
+Then el sistema rechaza la solicitud
+And responde con HTTP 401 Unauthorized.
+
+Contrato REST
+Método: GET
+Endpoint: /api/v1/notificaciones
+Autenticación: JWT
+Resultado exitoso: 200 OK
+Persistencia: PostgreSQL
+
+INVEST — HU-12
+Independent: puede desarrollarse como una funcionalidad diferenciada del procesamiento de pedidos.
+
+Negotiable: el contenido y presentación de las notificaciones pueden ajustarse.
+
+Valuable: informa oportunamente al agricultor sobre cambios relevantes.
+
+Estimable: el alcance está delimitado al registro y consulta de notificaciones.
+
+Small: se concentra en la gestión de notificaciones.
+
+Testable: contempla escenarios de generación y acceso no autorizado.
+
 # 2. Auditoría INVEST
 
 ### Auditoría actual — HU-01 a HU-09
