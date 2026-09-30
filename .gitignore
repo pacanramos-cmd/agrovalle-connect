@@ -45,3 +45,5 @@ application-secrets.yml
 *.log
 
 node_modules/
+.env
+!.env.example
