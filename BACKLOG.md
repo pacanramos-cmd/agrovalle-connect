@@ -278,6 +278,7 @@ And persiste la finca en PostgreSQL
 And genera un identificador único para la finca
 And responde con HTTP 201 Created
 
+```
 ### Escenario 2 — Datos obligatorios inválidos
 
 ```gherkin
@@ -287,6 +288,7 @@ Then el sistema rechaza la solicitud
 And responde con HTTP 400 Bad Request
 And no crea el registro de la finca
 
+```
 Contrato REST inicial
 Método: POST
 Endpoint: /api/v1/fincas
@@ -317,6 +319,7 @@ When consulta su inventario
 Then el sistema responde con HTTP 200 OK
 And retorna un arreglo JSON con los productos y sus cantidades disponibles
 
+```
 ### Escenario 2 — Inventario sin productos disponibles
 
 ```gherkin
@@ -326,6 +329,7 @@ When consulta su inventario
 Then el sistema responde con HTTP 200 OK
 And retorna un arreglo JSON vacío
 
+```
 Contrato REST inicial
 Método: GET
 Endpoint: /api/v1/inventario
@@ -358,6 +362,7 @@ And registra la orden de compra en PostgreSQL
 And genera un identificador único para la orden
 And responde con HTTP 201 Created
 
+```
 ### Escenario 2 — Cantidad superior al stock disponible
 
 ```gherkin
@@ -368,6 +373,7 @@ Then el sistema rechaza la solicitud
 And responde con HTTP 400 Bad Request
 And no crea la orden de compra
 
+```
 ### Escenario 3 — Usuario no autenticado
 
 ```gherkin
@@ -376,6 +382,7 @@ When intenta crear una orden de compra
 Then el sistema rechaza la solicitud
 And responde con HTTP 401 Unauthorized
 
+```
 Contrato REST inicial
 Método: POST
 Endpoint: /api/v1/pedidos
@@ -408,6 +415,7 @@ Then el sistema actualiza el estado de la orden
 And registra la actualización en PostgreSQL
 And responde con HTTP 200 OK
 
+```
 ### Escenario 2 — Orden inexistente o no asociada
 
 ```gherkin
@@ -417,6 +425,7 @@ Then el sistema rechaza la solicitud
 And responde con HTTP 404 Not Found
 And no modifica ninguna orden
 
+```
 ### Escenario 3 — Usuario no autenticado
 
 ```gherkin
@@ -425,6 +434,7 @@ When intenta confirmar el alistamiento de una orden
 Then el sistema rechaza la solicitud
 And responde con HTTP 401 Unauthorized
 
+```
 Contrato REST inicial
 Método: PATCH
 Endpoint: /api/v1/pedidos/{id_pedido}/alistamiento
@@ -454,6 +464,7 @@ And actualiza la programación del pedido
 And persiste la información en PostgreSQL
 And responde con HTTP 200 OK.
 
+```
 ### Escenario 2 — Pedido no disponible
 
 ```gherkin
@@ -463,6 +474,7 @@ Then el sistema rechaza la solicitud
 And responde con HTTP 404 Not Found
 And no modifica ningún registro.
 
+```
 Contrato REST
 Método: PATCH
 Endpoint: /api/v1/pedidos/{id_pedido}/despacho
@@ -483,6 +495,7 @@ Story Points: 5 (estimación inicial; pendiente de validación mediante Planning
 BDD
 
 ```gherkin
+```
 ### Escenario 1 — Consulta exitosa
 Given un comprador autenticado mediante JWT
 And existe un pedido asociado a su cuenta
@@ -499,6 +512,7 @@ When consulta un pedido inexistente
 Then el sistema responde con HTTP 404 Not Found
 And no retorna información de otro pedido.
 
+```
 Contrato REST
 Método: GET
 Endpoint: /api/v1/pedidos/{id_pedido}/seguimiento
@@ -526,6 +540,7 @@ And persiste la información en PostgreSQL
 And responde con HTTP 200 OK.
 
 
+```
 ### Escenario 2 — Usuario no autenticado
 
 ```gherkin
@@ -534,6 +549,7 @@ When intenta consultar sus notificaciones
 Then el sistema rechaza la solicitud
 And responde con HTTP 401 Unauthorized.
 
+```
 Contrato REST
 Método: GET
 Endpoint: /api/v1/notificaciones
@@ -563,6 +579,7 @@ Then el sistema valida las credenciales
 And genera un token JWT
 And responde con HTTP 200 OK.
 
+```
 ### Escenario 2 — Credenciales inválidas
 
 ```gherkin
@@ -571,6 +588,7 @@ When proporciona credenciales incorrectas
 Then el sistema rechaza el inicio de sesión
 And responde con HTTP 401 Unauthorized.
 
+```
 Contrato REST
 
 Método: POST
@@ -600,6 +618,7 @@ Then el sistema retorna las transacciones correspondientes
 And responde con HTTP 200 OK
 And obtiene la información desde PostgreSQL.
 
+```
 ### Escenario 2 — Sin transacciones
 
 ```gherkin
@@ -609,6 +628,7 @@ When consulta su historial
 Then el sistema responde con HTTP 200 OK
 And retorna un arreglo JSON vacío.
 
+```
 Contrato REST
 Método: GET
 Endpoint: /api/v1/transacciones/historial
@@ -638,6 +658,7 @@ Then el sistema retorna las ofertas cuyo precio está dentro del rango indicado
 And responde con HTTP 200 OK
 And obtiene las ofertas desde PostgreSQL.
 
+```
 ### Escenario 2 — Sin resultados
 
 ```gherkin
@@ -647,6 +668,7 @@ When realiza la búsqueda
 Then el sistema responde con HTTP 200 OK
 And retorna un arreglo JSON vacío.
 
+```
 ### Escenario 3 — Rango inválido
 
 ```gherkin
@@ -655,6 +677,7 @@ When proporciona un precio mínimo superior al precio máximo
 Then el sistema rechaza la solicitud
 And responde con HTTP 400 Bad Request.
 
+```
 Contrato REST
 Método: GET
 Endpoint: /api/v1/productos?precioMin={precioMin}&precioMax={precioMax}
