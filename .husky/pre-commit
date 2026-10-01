@@ -8,7 +8,7 @@ if [ $? -ne 0 ]; then
 fi
 
 echo "➡️  Ejecutando pruebas unitarias (JUnit 5)..."
-./mvnw.cmd test -DskipTests
+./mvnw.cmd test
 if [ $? -ne 0 ]; then
   echo "❌ Commit bloqueado: hay pruebas unitarias fallando."
   exit 1
