@@ -1,4 +1,4 @@
-package agrovalleconnect;
+package com.agrovalle.connect;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
