@@ -3,18 +3,21 @@ package com.agrovalle.connect.model;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.PersistenceException;
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Verifica que el mapeo JPA respeta las reglas del modelo de datos (HU-01 y HU-13): llaves
- * generadas, unicidad de cédula y correo, y obligatoriedad de municipio y rol.
+ * Verifica que el mapeo JPA respeta las reglas del modelo de datos (HU-01, HU-02 y HU-13): llaves generadas,
+ * perfil 1 a 1 con el usuario, unicidad de cédula y correo, y obligatoriedad de las relaciones.
  */
 @SpringBootTest
 @Transactional
@@ -34,28 +37,47 @@ class ModeloDatosTest {
         entityManager.persist(rol);
     }
 
-    private Agricultor agricultor(String cedula, String correo) {
-        return new Agricultor("Pedro Perez", cedula, correo, "hash-de-prueba", municipio, rol);
+    private Usuario usuario(String correo) {
+        return new Usuario("Pedro Perez", correo, "hash-de-prueba", rol);
+    }
+
+    private Agricultor guardarAgricultor(String cedula, String correo) {
+        Usuario usuario = usuario(correo);
+        entityManager.persist(usuario);
+        Agricultor agricultor = new Agricultor(usuario, cedula, municipio);
+        entityManager.persist(agricultor);
+        entityManager.flush();
+        return agricultor;
     }
 
     @Test
-    void guardaAgricultorConLlaveYFechaDeCreacion() {
-        Agricultor agricultor = agricultor("1130456789", "pedro@correo.com");
+    void guardaUsuarioConLlaveYFechaDeCreacion() {
+        Usuario usuario = usuario("pedro@correo.com");
 
-        entityManager.persist(agricultor);
+        entityManager.persist(usuario);
         entityManager.flush();
 
-        assertNotNull(agricultor.getId());
-        assertNotNull(agricultor.getCreadoEn());
+        assertNotNull(usuario.getId());
+        assertNotNull(usuario.getCreadoEn());
+        assertEquals("AGRICULTOR", usuario.getRol().getNombre());
+    }
+
+    @Test
+    void elAgricultorComparteLaLlaveDelUsuario() {
+        Agricultor agricultor = guardarAgricultor("1130456789", "pedro@correo.com");
+
+        assertEquals(agricultor.getUsuario().getId(), agricultor.getId());
+        assertEquals("Pedro Perez", agricultor.getNombre());
+        assertEquals("pedro@correo.com", agricultor.getCorreo());
         assertEquals("Dagua", agricultor.getMunicipio().getNombre());
-        assertEquals("AGRICULTOR", agricultor.getRol().getNombre());
     }
 
     @Test
     void rechazaCedulaDuplicada() {
-        entityManager.persist(agricultor("1130456789", "pedro@correo.com"));
-        entityManager.flush();
-        Agricultor duplicado = agricultor("1130456789", "otro@correo.com");
+        guardarAgricultor("1130456789", "pedro@correo.com");
+        Usuario otro = usuario("otro@correo.com");
+        entityManager.persist(otro);
+        Agricultor duplicado = new Agricultor(otro, "1130456789", municipio);
 
         assertThrows(PersistenceException.class, () -> {
             entityManager.persist(duplicado);
@@ -65,9 +87,9 @@ class ModeloDatosTest {
 
     @Test
     void rechazaCorreoDuplicado() {
-        entityManager.persist(agricultor("1130456789", "pedro@correo.com"));
+        entityManager.persist(usuario("pedro@correo.com"));
         entityManager.flush();
-        Agricultor duplicado = agricultor("1130456790", "pedro@correo.com");
+        Usuario duplicado = usuario("pedro@correo.com");
 
         assertThrows(PersistenceException.class, () -> {
             entityManager.persist(duplicado);
@@ -77,12 +99,33 @@ class ModeloDatosTest {
 
     @Test
     void rechazaAgricultorSinMunicipio() {
-        Agricultor sinMunicipio = new Agricultor(
-                "Pedro Perez", "1130456789", "pedro@correo.com", "hash-de-prueba", null, rol);
+        Usuario usuario = usuario("pedro@correo.com");
+        entityManager.persist(usuario);
+        Agricultor sinMunicipio = new Agricultor(usuario, "1130456789", null);
 
         assertThrows(PersistenceException.class, () -> {
             entityManager.persist(sinMunicipio);
             entityManager.flush();
         });
+    }
+
+    @Test
+    void guardaProductoActivoConCategoriaDelTipo() {
+        Agricultor agricultor = guardarAgricultor("1130456789", "pedro@correo.com");
+        Categoria frutas = new Categoria("Frutas");
+        entityManager.persist(frutas);
+        TipoProducto mango = new TipoProducto("Mango", frutas);
+        entityManager.persist(mango);
+        Producto producto = new Producto(agricultor, mango, new BigDecimal("120"), "KG",
+                new BigDecimal("3500"), LocalDate.of(2026, 11, 15));
+
+        entityManager.persist(producto);
+        entityManager.flush();
+
+        assertNotNull(producto.getId());
+        assertNotNull(producto.getCreadoEn());
+        assertTrue(producto.isActivo());
+        assertEquals("Frutas", producto.getTipoProducto().getCategoria().getNombre());
+        assertEquals("Dagua", producto.getAgricultor().getMunicipio().getNombre());
     }
 }
