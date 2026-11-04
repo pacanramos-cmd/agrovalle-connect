@@ -96,7 +96,10 @@ com.agrovalle.connect
 ├── dto          solicitudes y respuestas (records), ErrorResponse, ReglasValidacion
 ├── service      AgricultorService, AuthService, ProductoService, FincaService, PrecioService, PedidoService,
 │                TransaccionService, ContactoService, NotificacionService
-├── security     JwtService, SecurityConfig
+│   └── comision CalculadorComisionService, ComisionPorcentual, ComisionZonaCercana/Intermedia/Lejana, SelectorComision
+├── security     JwtService, JwtAuthenticationFilter, AgricultorUserDetailsService, SecurityConfig
+├── config       AppConfig (reloj de America/Bogota)
+├── event        ProductoPublicadoEvent, ProductoPublicadoListener
 ├── repository   14 interfaces JpaRepository
 ├── model        14 entidades JPA y enumeraciones (EstadoOrden, TipoNotificacion)
 ├── mapper       AgricultorMapper y un mapper por agregado
@@ -112,7 +115,7 @@ regionales (HU-03), pedidos (HU-08 a HU-11 y HU-14), comunicación (HU-05, HU-12
 |---|---|---|---|---|
 | 01 | `POST /api/v1/auth/register` | público | 201 | 400, 409 |
 | 13 | `POST /api/v1/auth/login` | público | 200 | 400, 401 |
-| 02 | `POST /api/v1/productos` | AGRICULTOR | 201 | 400, 401 |
+| 02 | `POST /api/v1/productos` | AGRICULTOR | 201 | 400, 401, 403 |
 | 03 | `GET /api/v1/precios/promedio?producto=` | cualquier usuario | 200 | 400 |
 | 04 | `GET /api/v1/productos?municipio=&categoria=` | cualquier usuario | 200 | — |
 | 05 | `POST /api/v1/contacto/mensaje` | COMPRADOR | 200 | 400, 401, 404 |
@@ -133,29 +136,38 @@ son decisiones de diseño por confirmar con el Product Owner.
 
 | Patrón | Tipo | Dónde se aplica | Estado |
 |---|---|---|---|
-| Repository | Enterprise | Las 14 interfaces de `repository`; el servicio no conoce SQL | Implementado (3 de 14) |
+| Repository | Enterprise | Las 14 interfaces de `repository`; el servicio no conoce SQL | Implementado (7 de 14, hasta HU-04) |
 | Singleton / Inyección de dependencias (IoC) | GoF / Enterprise | Todos los beans de Spring, con inyección por constructor y `@Autowired` | Implementado |
 | Data Transfer Object (DTO) | Enterprise | Registros de `dto`; aíslan las entidades de los contratos JSON | Implementado |
-| Data Mapper | Enterprise | `AgricultorMapper` y un mapper por agregado | Implementado (HU-01) |
+| Data Mapper | Enterprise | `AgricultorMapper`, `ProductoMapper` y un mapper por agregado | Implementado (HU-01, HU-02) |
 | Factory Method | GoF (creacional) | Métodos `aEntidad(...)` de los mappers: construyen entidades válidas con hash, perfil y rol resueltos | Implementado (HU-01) |
 | Strategy | GoF (comportamiento) | `PasswordEncoder` con la implementación `BCryptPasswordEncoder` | Implementado |
-| Builder | GoF (creacional) | `Jwts.builder()` dentro de `JwtService` | En desarrollo (HU-13) |
-| Observer / Event Driven | GoF (comportamiento) | `PedidoService` y `ContactoService` publican eventos de dominio con `ApplicationEventPublisher`; un listener de `NotificacionService` crea las notificaciones | Planificado (Sprint 2) |
+| Builder | GoF (creacional) | `Jwts.builder()` dentro de `JwtService` | Implementado (HU-13) |
+| **Strategy (comisión por municipio)** | GoF (comportamiento) | `CalculadorComisionService` con `ComisionZonaCercana` (3%), `ComisionZonaIntermedia` (4%) y `ComisionZonaLejana` (5%, por defecto); `SelectorComision` elige la estrategia. `ProductoService` la usa para la comisión estimada de cada oferta | **Implementado (Sprint 2, HU-02)** |
+| **Observer / Event Driven (publicación)** | GoF (comportamiento) | `ProductoService` publica `ProductoPublicadoEvent` con `ApplicationEventPublisher`; `ProductoPublicadoListener` lo observa | **Implementado (Sprint 2, HU-02)** |
+| **Specification** | Enterprise | `ProductoSpecifications` combina `activo()`, `deMunicipio()` y `deCategoria()` solo con los filtros recibidos (HU-04) | **Implementado (Sprint 2, HU-04)** |
+| Chain of Responsibility / Filter | Enterprise | `JwtAuthenticationFilter` dentro de la cadena de filtros de Spring Security | Implementado (HU-13) |
+| Observer / Event Driven (pedidos y contacto) | GoF (comportamiento) | `PedidoService` y `ContactoService` publican eventos de dominio con `ApplicationEventPublisher`; un listener de `NotificacionService` crea las notificaciones | Planificado (Sprint 2) |
 | Strategy (cálculo de precio) | GoF (comportamiento) | Interfaz `CalculadorPrecioReferencia` con `PromedioReciente` y otras estrategias para HU-03 | Planificado (Sprint 2) |
-| Specification / filtros combinables | Enterprise | `ProductoSpecification` combina municipio, categoría y rango de precio (HU-04 y HU-15) | Planificado (Sprint 2) |
+| Specification (rango de precio) | Enterprise | Se agrega el criterio de rango de precio a `ProductoSpecifications` (HU-15) | Planificado |
 | Decorator | GoF (estructural) | Auditoría o registro sobre `PedidoService` sin modificar su código | Planificado (Sprint 2) |
 
 ## 6. Principios SOLID
 
 - **SRP:** los controladores solo traducen HTTP, los servicios aplican reglas de negocio y los repositorios solo
   persisten; ningún controlador ejecuta SQL ni decide reglas.
-- **OCP:** los cálculos que pueden crecer (precio de referencia, filtros de búsqueda) se extienden agregando
-  implementaciones de una interfaz, sin modificar código ya probado.
-- **LSP:** `Agricultor` y `Comprador` sustituyen a `Usuario` sin romper su contrato; `AuthService` trabaja con `Usuario`.
+- **OCP:** los cálculos que pueden crecer (comisión por zona, precio de referencia, filtros de búsqueda) se extienden
+  agregando implementaciones de una interfaz o criterios de `ProductoSpecifications`, sin modificar código ya probado.
+- **LSP:** las estrategias `ComisionZonaCercana`, `ComisionZonaIntermedia` y `ComisionZonaLejana` cumplen el mismo
+  contrato de `CalculadorComisionService` (comisión con dos decimales y no negativa) y son intercambiables en
+  `SelectorComision`; la prueba `todasLasEstrategiasSonSustituiblesYNuncaDevuelvenNegativos` lo verifica. `Agricultor` se
+  modela como perfil 1 a 1 de `Usuario` (composición), por lo que `AuthService` trabaja con `Usuario` sin jerarquías que
+  puedan romper el contrato.
 - **ISP:** un repositorio por agregado, con solo las consultas que cada servicio necesita; los servicios no dependen de
   métodos que no usan.
-- **DIP:** los servicios dependen de abstracciones (`PasswordEncoder`, repositorios, y las interfaces de servicio que se
-  introducen en el Sprint 2) e inyectan sus dependencias por constructor.
+- **DIP:** los servicios dependen de abstracciones (`PasswordEncoder`, repositorios, `CalculadorComisionService`,
+  `ApplicationEventPublisher`, `Clock`) e inyectan sus dependencias por constructor; por eso las pruebas las sustituyen
+  con Mockito y un reloj fijo.
 
 ## 7. Flujos principales
 

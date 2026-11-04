@@ -61,3 +61,28 @@ Formato: qué se hizo desde la reunión anterior, qué se hará hasta la siguien
 **Acuerdos:**
 - Completar `bitacora-daily-scrum.md`, `sprint-1-review.md` y `sprint-1-retrospective.md`.
 - Hacer público el tablero para la revisión del docente.
+
+---
+
+## Sprint 2
+
+> Registro de los Daily Scrum del Sprint 2. Cada reunión se anota con la misma estructura del Sprint 1: asistentes,
+> estado del tablero, tabla de avances y acuerdos.
+
+### Daily Scrum — [COMPLETAR: fecha]
+
+**Asistentes:** [COMPLETAR]
+
+**Estado del tablero:**
+- Done: [COMPLETAR]
+- In progress (≤ 3): [COMPLETAR]
+- In review (≤ 2): [COMPLETAR]
+
+| Integrante | Qué hice | Qué haré | Impedimentos |
+|---|---|---|---|
+| Andrés Felipe Ramos | [COMPLETAR] | [COMPLETAR] | [COMPLETAR] |
+| Luis Felipe Porras | [COMPLETAR] | [COMPLETAR] | [COMPLETAR] |
+| Santiago Narváez Rivera | [COMPLETAR] | [COMPLETAR] | [COMPLETAR] |
+| Milton Adolfo Cortes | [COMPLETAR] | [COMPLETAR] | [COMPLETAR] |
+
+**Acuerdos:** [COMPLETAR]

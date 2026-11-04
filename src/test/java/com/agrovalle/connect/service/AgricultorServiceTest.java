@@ -15,9 +15,11 @@ import com.agrovalle.connect.mapper.AgricultorMapper;
 import com.agrovalle.connect.model.Agricultor;
 import com.agrovalle.connect.model.Municipio;
 import com.agrovalle.connect.model.Rol;
+import com.agrovalle.connect.model.Usuario;
 import com.agrovalle.connect.repository.AgricultorRepository;
 import com.agrovalle.connect.repository.MunicipioRepository;
 import com.agrovalle.connect.repository.RolRepository;
+import com.agrovalle.connect.repository.UsuarioRepository;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -32,6 +34,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
  */
 @ExtendWith(MockitoExtension.class)
 class AgricultorServiceTest {
+
+    @Mock
+    private UsuarioRepository usuarioRepository;
 
     @Mock
     private AgricultorRepository agricultorRepository;
@@ -49,8 +54,8 @@ class AgricultorServiceTest {
 
     @BeforeEach
     void crearServicio() {
-        servicio = new AgricultorService(agricultorRepository, municipioRepository, rolRepository,
-                passwordEncoder, new AgricultorMapper());
+        servicio = new AgricultorService(usuarioRepository, agricultorRepository, municipioRepository,
+                rolRepository, passwordEncoder, new AgricultorMapper());
     }
 
     private RegistroAgricultorRequest solicitud() {
@@ -60,18 +65,22 @@ class AgricultorServiceTest {
 
     @Test
     void registraAgricultorConContrasenaCifradaYCorreoEnMinusculas() {
+        // Arrange
         when(municipioRepository.findByNombreIgnoreCase("Dagua")).thenReturn(Optional.of(new Municipio("Dagua")));
         when(rolRepository.findByNombre("AGRICULTOR")).thenReturn(Optional.of(new Rol("AGRICULTOR")));
         when(passwordEncoder.encode("clave12345")).thenReturn("hash-bcrypt");
+        when(usuarioRepository.save(any(Usuario.class))).thenAnswer(llamada -> llamada.getArgument(0));
         when(agricultorRepository.save(any(Agricultor.class))).thenAnswer(llamada -> llamada.getArgument(0));
 
+        // Act
         AgricultorResponse respuesta = servicio.registrar(solicitud());
 
-        ArgumentCaptor<Agricultor> guardado = ArgumentCaptor.forClass(Agricultor.class);
-        verify(agricultorRepository).save(guardado.capture());
-        assertEquals("hash-bcrypt", guardado.getValue().getContrasenaHash());
-        assertEquals("pedro@correo.com", guardado.getValue().getCorreo());
-        assertEquals("AGRICULTOR", guardado.getValue().getRol().getNombre());
+        // Assert
+        ArgumentCaptor<Usuario> usuario = ArgumentCaptor.forClass(Usuario.class);
+        verify(usuarioRepository).save(usuario.capture());
+        assertEquals("hash-bcrypt", usuario.getValue().getContrasenaHash());
+        assertEquals("pedro@correo.com", usuario.getValue().getCorreo());
+        assertEquals("AGRICULTOR", usuario.getValue().getRol().getNombre());
         assertEquals("Pedro Perez", respuesta.nombre());
         assertEquals("1130456789", respuesta.cedula());
         assertEquals("pedro@correo.com", respuesta.correo());
@@ -84,15 +93,17 @@ class AgricultorServiceTest {
 
         assertThrows(RecursoDuplicadoException.class, () -> servicio.registrar(solicitud()));
 
+        verify(usuarioRepository, never()).save(any(Usuario.class));
         verify(agricultorRepository, never()).save(any(Agricultor.class));
     }
 
     @Test
     void rechazaCorreoYaRegistrado() {
-        when(agricultorRepository.existsByCorreo("pedro@correo.com")).thenReturn(true);
+        when(usuarioRepository.existsByCorreo("pedro@correo.com")).thenReturn(true);
 
         assertThrows(RecursoDuplicadoException.class, () -> servicio.registrar(solicitud()));
 
+        verify(usuarioRepository, never()).save(any(Usuario.class));
         verify(agricultorRepository, never()).save(any(Agricultor.class));
     }
 
@@ -102,6 +113,16 @@ class AgricultorServiceTest {
 
         assertThrows(MunicipioNoEncontradoException.class, () -> servicio.registrar(solicitud()));
 
-        verify(agricultorRepository, never()).save(any(Agricultor.class));
+        verify(usuarioRepository, never()).save(any(Usuario.class));
+    }
+
+    @Test
+    void fallaSiElRolAgricultorNoEstaConfigurado() {
+        when(municipioRepository.findByNombreIgnoreCase("Dagua")).thenReturn(Optional.of(new Municipio("Dagua")));
+        when(rolRepository.findByNombre("AGRICULTOR")).thenReturn(Optional.empty());
+
+        assertThrows(IllegalStateException.class, () -> servicio.registrar(solicitud()));
+
+        verify(usuarioRepository, never()).save(any(Usuario.class));
     }
 }

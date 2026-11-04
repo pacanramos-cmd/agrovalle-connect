@@ -1,7 +1,6 @@
 package com.agrovalle.connect.repository;
 
 import com.agrovalle.connect.model.Agricultor;
-import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -12,8 +11,4 @@ import org.springframework.stereotype.Repository;
 public interface AgricultorRepository extends JpaRepository<Agricultor, Long> {
 
     boolean existsByCedula(String cedula);
-
-    boolean existsByCorreo(String correo);
-
-    Optional<Agricultor> findByCorreo(String correo);
 }
