@@ -1,38 +1,42 @@
-name: CI
+name: Integración Continua AgroValle Connect
 
-# Se ejecuta en cada push y en cada Pull Request hacia la rama main.
+# Evento: push a main o a ramas de trabajo, y todo Pull Request hacia main.
 on:
   push:
-    branches: [ main ]
+    branches: [ main, 'feature/**', 'feat/**' ]
   pull_request:
     branches: [ main ]
 
 jobs:
-  build:
-    name: build
+  # Este nombre de job es el que se marca como "Required status check" en la regla de protección de main.
+  build-and-test:
+    name: build-and-test
     runs-on: ubuntu-latest
 
     steps:
-      - name: Descargar el código
+      - name: Descargar código
         uses: actions/checkout@v4
 
-      - name: Configurar JDK 17 (Temurin)
+      - name: Configurar Java 17 (Temurin)
         uses: actions/setup-java@v4
         with:
-          distribution: temurin
           java-version: '17'
+          distribution: 'temurin'
           cache: maven
 
-      - name: Paso 1 - Compilación limpia
+      - name: Compilación limpia
         run: mvn -B clean compile
 
-      - name: Paso 2 - Verificación de Checkstyle
+      - name: Gate 1 - Verificación estática (Checkstyle, 0 advertencias)
         run: mvn -B checkstyle:check
 
-      - name: Paso 3 - Pruebas unitarias y cobertura JaCoCo (mínimo 60%)
+      - name: Gate 2 - Pruebas automatizadas (JUnit 5 y Mockito)
         run: mvn -B test
 
-      - name: Publicar el reporte de cobertura
+      - name: Gate 3 - Umbral de cobertura JaCoCo (>= 60% instrucciones y ramas)
+        run: mvn -B jacoco:check
+
+      - name: Publicar el reporte HTML de JaCoCo
         if: always()
         uses: actions/upload-artifact@v4
         with:
