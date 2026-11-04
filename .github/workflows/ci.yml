@@ -1,0 +1,41 @@
+name: CI
+
+# Se ejecuta en cada push y en cada Pull Request hacia la rama main.
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    name: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Descargar el código
+        uses: actions/checkout@v4
+
+      - name: Configurar JDK 17 (Temurin)
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: maven
+
+      - name: Paso 1 - Compilación limpia
+        run: mvn -B clean compile
+
+      - name: Paso 2 - Verificación de Checkstyle
+        run: mvn -B checkstyle:check
+
+      - name: Paso 3 - Pruebas unitarias y cobertura JaCoCo (mínimo 60%)
+        run: mvn -B test
+
+      - name: Publicar el reporte de cobertura
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: reporte-jacoco
+          path: target/site/jacoco
+          if-no-files-found: ignore
