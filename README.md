@@ -1,5 +1,7 @@
 # AgroValle Connect 🌾
 
+[![CI](https://github.com/pacanramos-cmd/agrovalle-connect/actions/workflows/ci.yml/badge.svg)](https://github.com/pacanramos-cmd/agrovalle-connect/actions/workflows/ci.yml)
+
 ## 📌 Visión del Producto
 > Para **productores del Valle del Cauca**,
 > que **necesitan vender directo sin intermediarios**,
@@ -73,3 +75,20 @@ Ver [docs/dod.md](docs/dod.md)
 
 ## 📋 Product Backlog
 Ver [BACKLOG.md](BACKLOG.md)
+
+## 🔐 Variables de entorno
+
+Copiar `.env.example` y completar los valores. Nunca se suben credenciales al repositorio.
+
+| Variable | Uso |
+|---|---|
+| `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASSWORD` | Conexión a PostgreSQL |
+| `JWT_SECRET` | Clave para firmar los tokens JWT (mínimo 32 caracteres) |
+| `JWT_EXPIRATION_MS` | Vigencia del token en milisegundos (por defecto 3600000) |
+
+## ✅ Integración Continua
+
+Cada push a `main` o `feature/*` y cada Pull Request hacia `main` ejecuta `.github/workflows/ci.yml` (job
+`build-and-test`) con tres Quality Gates: `mvn checkstyle:check`, `mvn test` y `mvn jacoco:check` (cobertura mínima del 60%
+en instrucciones y ramas). `main` está protegida: exige Pull Request, el check en verde y la aprobación de un compañero.
+Pasos de configuración y de la simulación de fallo en `docs/guia-ci-y-proteccion-de-ramas.md`.
