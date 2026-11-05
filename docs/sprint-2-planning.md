@@ -7,7 +7,7 @@
 | Curso | Ingeniería de Software II |
 | Docente | Paola Andrea Bedoya Toro |
 | Equipo | Andrés Felipe Ramos, Luis Felipe Porras, Santiago Narváez Rivera, Milton Adolfo Cortes |
-| Duración del sprint | [COMPLETAR: fechas de inicio y fin] |
+| Duración del sprint | Posterior al cierre del Sprint 1 (7 de octubre de 2026) y hasta el 4 de noviembre de 2026 |
 | Repositorio | https://github.com/pacanramos-cmd/agrovalle-connect |
 | Estrategia de branching | GitFlow (`main`, `develop`, `feature/*`); todo cambio entra por Pull Request |
 

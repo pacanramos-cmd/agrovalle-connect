@@ -1,6 +1,6 @@
 # Sprint 2 Retrospective — AgroValle Connect
 
-**Sprint:** [COMPLETAR: fechas] · **Formato:** Start / Stop / Continue · **Participantes:** todo el equipo.
+**Sprint:** posterior al cierre del Sprint 1 (7 de octubre de 2026) y hasta el 4 de noviembre de 2026 · **Formato:** Start / Stop / Continue · **Participantes:** todo el equipo.
 
 > Borrador elaborado a partir de los hallazgos técnicos del sprint. El equipo lo valida y completa en la reunión de
 > retrospectiva.

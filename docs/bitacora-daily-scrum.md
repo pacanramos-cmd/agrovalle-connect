@@ -71,7 +71,7 @@ Formato: qué se hizo desde la reunión anterior, qué se hará hasta la siguien
 
 ### Daily Scrum — 04/11/2026
 
-**Asistentes:** [COMPLETAR]
+**Asistentes:** según la actividad registrada en el repositorio, Luis Felipe Porras y Santiago Narváez Rivera.
 
 **Estado del tablero:**
 - Done: HU-02 (#8), HU-04 (#10), T-CI.1 (#58) y T-CI.2 (#59). Pull Request #57 fusionado en `main` con `build-and-test` en verde.
@@ -81,10 +81,10 @@ Formato: qué se hizo desde la reunión anterior, qué se hará hasta la siguien
 
 | Integrante | Qué hice | Qué haré | Impedimentos |
 |---|---|---|---|
-| Andrés Felipe Ramos | [COMPLETAR] | [COMPLETAR] | [COMPLETAR] |
+| Andrés Felipe Ramos | Sin commits ni Pull Requests propios en el Sprint 2 según el historial del repositorio (su último aporte fue fusionar el PR #51, HU-01, el 16/10/2026) | Crear la regla de protección de `main`, por ser el dueño del repositorio | Ninguno registrado |
 | Luis Felipe Porras | Actualicé la rama del Sprint 2, instalé Temurin 17 con `JAVA_HOME` y ejecuté las puertas en local; el reporte JaCoCo dio 95% en instrucciones y 93% en ramas; reuní las evidencias del Pull Request #57 | Documentar el Sprint 2 y la simulación del fallo en una rama `feature/` | Sin permisos de administrador para activar la regla de rama |
 | Santiago Narváez Rivera | Subí HU-13 (JWT), HU-02 y HU-04 con Strategy, Observer y Specification, el pipeline `ci.yml` con las 3 Quality Gates, la guía de CI y la documentación del Sprint 2; fusioné los PR #56 y #57 | Revisar la protección de `main` y apoyar la simulación del fallo | Sin permisos de administrador para activar la regla de rama |
-| Milton Adolfo Cortes | [COMPLETAR] | [COMPLETAR] | [COMPLETAR] |
+| Milton Adolfo Cortes | Sin commits ni Pull Requests propios en el Sprint 2 según el historial del repositorio (su último aporte fue agregar HU-10 a HU-12 al backlog, el 15/09/2026) | Por asignar en el tablero | Ninguno registrado |
 
 **Acuerdos:**
 - Pedir al dueño del repositorio que cree la regla de protección de `main` (Pull Request, check `build-and-test` y una aprobación), o que otorgue rol de administrador.
