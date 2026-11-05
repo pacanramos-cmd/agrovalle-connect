@@ -1,10 +1,10 @@
 # Sprint 2 Review — AgroValle Connect
 
-**Sprint:** [COMPLETAR: fechas]
+**Sprint:** posterior al cierre del Sprint 1 (7 de octubre de 2026) y hasta el 4 de noviembre de 2026
 **Sprint Goal:** Permitir que un agricultor autenticado publique sus productos y que cualquier comprador los encuentre
 filtrando por municipio y categoría, con cada cambio validado por Integración Continua.
 **Equipo:** Andrés Felipe Ramos, Luis Felipe Porras, Santiago Narváez Rivera, Milton Adolfo Cortes.
-**Modalidad de la demo:** [COMPLETAR: llamada de Discord con pantalla compartida / presencial]
+**Modalidad de la demo:** llamada de Discord con pantalla compartida, igual que en las reuniones del equipo
 
 ---
 
@@ -25,23 +25,36 @@ en `docs/diseno/arquitectura-mvc-gof.md`.
 
 - Pipeline `.github/workflows/ci.yml`, job `build-and-test`, con tres Quality Gates: Checkstyle, pruebas JUnit 5 y umbral
   JaCoCo del 60% en instrucciones y ramas.
-- Regla de protección de `main`: Pull Request obligatorio, check `build-and-test` en verde y una aprobación.
-- Evidencias: [COMPLETAR: capturas del Actions en verde, del reporte JaCoCo con el porcentaje real y del Pull Request
-  bloqueado por el fallo intencional de la simulación].
+- Regla de protección de `main` (Pull Request obligatorio, check `build-and-test` en verde y una aprobación): **pendiente
+  de activar**. El repositorio pertenece a `pacanramos-cmd` y los demás integrantes son colaboradores sin acceso a
+  *Settings → Branches*; se solicitó al dueño que la cree. La fecha y quién la creó se registrarán cuando esté activa.
+- Resultado verificado: el Pull Request #57 (`feature/sprint-2-hu02-hu04-ci` → `main`, 6 commits) pasó `build-and-test` en
+  verde en las dos ejecuciones del pipeline (`push` y `pull_request`). Cobertura JaCoCo medida el 4 de noviembre con
+  Temurin 17.0.21: **95% en instrucciones y 93% en ramas**, por encima del umbral del 60%.
+- Evidencias anexas: reporte JaCoCo, Pull Request #57 con los checks en verde y pestaña Actions. Se anexarán cuando se
+  hagan: la regla de protección guardada y la simulación del fallo (Pull Request en rojo con el merge bloqueado, el mismo
+  en verde y la aprobación de un compañero).
 
 ## 3. Estado del tablero al cierre
 
 | Columna | Estado |
 |---|---|
-| Done | [COMPLETAR: tareas T-02.x, T-04.x, T-CI.x y T-D.x terminadas] |
-| In progress | [COMPLETAR] |
+| Done | HU-02 (#8), HU-04 (#10), T-CI.1 (#58) y T-CI.2 (#59) |
+| In progress (3/3) | T-CI.3 (#60), que depende de que el dueño del repositorio active la protección de `main`; y T-01.2 (#25) y T-13.1 (#33), heredadas del Sprint 1 |
+| Ready | T-CI.4 (#61) y T-CI.5 (#62): la simulación del fallo y su corrección se hacen cuando la regla esté activa |
 | Backlog | HU-03, HU-05 a HU-12, HU-14 y HU-15 |
 
-**Puntos completados:** [COMPLETAR] de 8 comprometidos. **Cobertura JaCoCo:** [COMPLETAR]%.
+**Puntos completados:** 8 de 8 comprometidos (HU-02: 5 y HU-04: 3, fusionadas en `main` con el CI en verde). **Cobertura JaCoCo:** 95% en
+instrucciones y 93% en ramas.
+
+> Las tarjetas de HU-01 (#6) y HU-13 (#21) y sus tareas del Sprint 1 siguen sin actualizarse en el tablero. Su actualización queda pendiente de confirmar con el equipo.
+>
+> Observación de calidad: el Pull Request #57 se fusionó sin aprobación de un compañero (la pestaña Conversation muestra 0
+> interacciones). Es la razón de T-CI.3 y queda registrada en la retrospectiva.
 
 ## 4. Retroalimentación del Product Owner
 
-[COMPLETAR: comentarios de la docente durante la demo]. Pendientes por confirmar con el Product Owner: las tasas de
+A la fecha de este registro la docente no ha entregado comentarios sobre la demo; se agregarán a este documento cuando los entregue. Pendientes por confirmar con el Product Owner: las tasas de
 comisión por zona (3%, 4% y 5% son valores de trabajo), el código `409` para duplicados y el acceso público de HU-04.
 
 ## 5. Siguiente sprint

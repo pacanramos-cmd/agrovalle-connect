@@ -69,20 +69,24 @@ Formato: qué se hizo desde la reunión anterior, qué se hará hasta la siguien
 > Registro de los Daily Scrum del Sprint 2. Cada reunión se anota con la misma estructura del Sprint 1: asistentes,
 > estado del tablero, tabla de avances y acuerdos.
 
-### Daily Scrum — [COMPLETAR: fecha]
+### Daily Scrum — 04/11/2026
 
-**Asistentes:** [COMPLETAR]
+**Asistentes:** según la actividad registrada en el repositorio, Luis Felipe Porras y Santiago Narváez Rivera.
 
 **Estado del tablero:**
-- Done: [COMPLETAR]
-- In progress (≤ 3): [COMPLETAR]
-- In review (≤ 2): [COMPLETAR]
+- Done: HU-02 (#8), HU-04 (#10), T-CI.1 (#58) y T-CI.2 (#59). Pull Request #57 fusionado en `main` con `build-and-test` en verde.
+- In progress (3/3): T-CI.3 (#60, protección de `main`), T-01.2 (#25) y T-13.1 (#33).
+- Ready: T-CI.4 (#61, simulación del fallo) y T-CI.5 (#62, corrección y merge con Peer Review).
+- In review (0/2): ninguna.
 
 | Integrante | Qué hice | Qué haré | Impedimentos |
 |---|---|---|---|
-| Andrés Felipe Ramos | [COMPLETAR] | [COMPLETAR] | [COMPLETAR] |
-| Luis Felipe Porras | [COMPLETAR] | [COMPLETAR] | [COMPLETAR] |
-| Santiago Narváez Rivera | [COMPLETAR] | [COMPLETAR] | [COMPLETAR] |
-| Milton Adolfo Cortes | [COMPLETAR] | [COMPLETAR] | [COMPLETAR] |
+| Andrés Felipe Ramos | Sin commits ni Pull Requests propios en el Sprint 2 según el historial del repositorio (su último aporte fue fusionar el PR #51, HU-01, el 16/10/2026) | Crear la regla de protección de `main`, por ser el dueño del repositorio | Ninguno registrado |
+| Luis Felipe Porras | Actualicé la rama del Sprint 2, instalé Temurin 17 con `JAVA_HOME` y ejecuté las puertas en local; el reporte JaCoCo dio 95% en instrucciones y 93% en ramas; reuní las evidencias del Pull Request #57 | Documentar el Sprint 2 y la simulación del fallo en una rama `feature/` | Sin permisos de administrador para activar la regla de rama |
+| Santiago Narváez Rivera | Subí HU-13 (JWT), HU-02 y HU-04 con Strategy, Observer y Specification, el pipeline `ci.yml` con las 3 Quality Gates, la guía de CI y la documentación del Sprint 2; fusioné los PR #56 y #57 | Revisar la protección de `main` y apoyar la simulación del fallo | Sin permisos de administrador para activar la regla de rama |
+| Milton Adolfo Cortes | Sin commits ni Pull Requests propios en el Sprint 2 según el historial del repositorio (su último aporte fue agregar HU-10 a HU-12 al backlog, el 15/09/2026) | Por asignar en el tablero | Ninguno registrado |
 
-**Acuerdos:** [COMPLETAR]
+**Acuerdos:**
+- Pedir al dueño del repositorio que cree la regla de protección de `main` (Pull Request, check `build-and-test` y una aprobación), o que otorgue rol de administrador.
+- Hacer la simulación del fallo en una rama `feature/prueba-fallo-ci` cuando la regla esté activa.
+- Registrar las tareas T-CI.1 a T-CI.5 en el tablero y completar los documentos del Sprint 2.
