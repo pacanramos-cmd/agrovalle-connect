@@ -20,7 +20,8 @@
 1. El Product Owner presenta el Product Backlog restante (HU-02 a HU-12, HU-14 y HU-15) y confirma que HU-01 y HU-13 se
    cierran en este sprint si quedaron tareas abiertas.
 2. El equipo revisa los escenarios BDD de HU-02 y HU-04 y las decisiones de diseño que dependen de ellos.
-3. Se calcula la capacidad con la velocidad del Sprint 1: [COMPLETAR: puntos terminados en el Sprint 1].
+3. Se calcula la capacidad con la velocidad del Sprint 1: 0 de 10 puntos acreditados al cierre, porque HU-01 (5) y HU-13 (5)
+   seguían abiertas según la Definition of Done. Por eso el sprint se compromete con 8 puntos y cierra primero esas dos historias.
 4. Se seleccionan las historias y se construye el Sprint Goal.
 
 ### 1.2 Historias del Sprint 2

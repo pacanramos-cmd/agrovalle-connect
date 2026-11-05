@@ -31,14 +31,17 @@
 - Activar y respetar la protección de `main`: ningún cambio entra sin CI en verde y una aprobación.
 - Revisar `schema.sql` contra las entidades JPA cada vez que se agregue una entidad.
 - Probar cada endpoint protegido con y sin token, y con el rol incorrecto.
+- Dejar el entorno de cada integrante listo desde el Sprint 0: JDK 17 (Temurin) con `JAVA_HOME`, el Maven Wrapper y
+  `pom.xml` en la raíz del repositorio, porque el pipeline y los IDE lo buscan ahí.
+- Repartir los permisos de administrador del repositorio para que más de una persona pueda configurar las reglas de rama.
 
 ## 4. Acciones de mejora
 
 | Acción | Responsable | Plazo | Indicador |
 |---|---|---|---|
-| Activar la regla de protección de `main` con el check `build-and-test`. | [COMPLETAR] | [COMPLETAR] | Merge bloqueado si el pipeline está en rojo. |
-| Mantener la cobertura JaCoCo por encima del 60%. | [COMPLETAR] | Cada sprint | Gate 3 en verde. |
-| Revisar el esquema contra las entidades en cada Pull Request. | [COMPLETAR] | Cada sprint | La aplicación arranca contra PostgreSQL. |
+| Activar la regla de protección de `main` con el check `build-and-test`. | Dueño del repositorio (`pacanramos-cmd`); es quien tiene permisos de administrador | Antes de la entrega | Merge bloqueado si el pipeline está en rojo. |
+| Mantener la cobertura JaCoCo por encima del 60%. | Todo el equipo | Cada sprint | Gate 3 en verde (cobertura actual: 95% instrucciones, 93% ramas). |
+| Revisar el esquema contra las entidades en cada Pull Request. | Quien abra el Pull Request, con la revisión de un compañero | Cada sprint | La aplicación arranca contra PostgreSQL. |
 | Un compañero aprueba cada Pull Request. | Todo el equipo | Cada sprint | 100% de los PR con una aprobación. |
 
 ## 5. Relación con la calidad ISO/IEC 25010
